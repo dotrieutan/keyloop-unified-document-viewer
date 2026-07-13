@@ -10,7 +10,8 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 
 - [x] Select Scenario D and the backend service layer.
 - [x] Establish durable repository instructions and handoff documentation.
-- [ ] Select and record the implementation technology stack.
+- [x] Select and record the implementation technology stack.
+- [x] Reconcile Scenario D's UI wording with the backend-only implementation choice.
 - [ ] Resolve and document the remaining product assumptions.
 - [ ] Define the normalized API contract and downstream mock contracts.
 - [ ] Complete the architecture and request-sequence diagrams.
@@ -78,4 +79,3 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 5. Additional polish.
 
 Optional features must never displace the first four priorities.
-

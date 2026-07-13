@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft. The scenario and service-layer choice are accepted; the implementation stack and detailed API schema remain to be decided.
+Draft. The scenario, service-layer choice, and implementation stack are accepted; the detailed API schemas remain to be decided.
 
 ## 1. Problem statement
 
@@ -19,10 +19,11 @@ Dealership users currently need to consult separate Sales and Service systems to
 - Persistent search audit records.
 - Structured logging, metrics design, and trace/correlation context.
 - API contract and automated tests.
+- Swagger UI and cURL examples as the mocked client-side layer.
 
 ### Out of scope
 
-- Production frontend.
+- Custom production frontend. Swagger UI is included as the client stub permitted by the assessment.
 - Authentication and authorization implementation.
 - Storing or serving document binary content.
 - Production cloud infrastructure.
@@ -155,15 +156,19 @@ The final schema and retention assumptions remain to be recorded.
 
 ## 13. Technology choices
 
-Decision pending. Selection criteria:
+| Technology | Selected version | Justification |
+|---|---:|---|
+| Kotlin | 2.4.0 | Current stable Kotlin release and the owner's selected JVM language. Its null-safety, data classes, and coroutine support fit contract modelling and parallel I/O. |
+| Spring Boot | 4.1.0 | Current stable Spring Boot release, providing REST, validation, configuration, health, metrics, testing, and dependency management. |
+| Java | 25 LTS | Current long-term-support Java baseline. It is supported by Spring Boot 4.1 while avoiding the shorter lifecycle of a non-LTS feature release. |
+| Gradle | 9.5.0 | Current stable Gradle release supported by Spring Boot 4.1, used through a checked-in wrapper for reproducibility. |
+| PostgreSQL | 18.4 | Current stable PostgreSQL major and minor release for persistent search auditing. |
+| Flyway | Spring Boot managed | Versioned, reviewable database schema migrations without an independently forced version. |
+| springdoc-openapi | 3.0.3 | Current stable Spring Boot 4-compatible line, supplying the OpenAPI contract and Swagger UI client stub. |
+| Testcontainers | Spring Boot managed | Real PostgreSQL integration tests without requiring a shared developer database. |
+| Docker Compose | Host installation | Reproducible local database and mock-service demonstration environment where useful. |
 
-- the owner's interview fluency,
-- fast local setup,
-- clear concurrency primitives,
-- mature HTTP testing,
-- database migration support,
-- OpenAPI support, and
-- straightforward structured telemetry.
+“Latest” means the latest stable, mutually compatible release verified on July 13, 2026. Milestones, release candidates, snapshots, and experimental APIs are excluded.
 
 ## 14. GenAI use in the design phase
 
@@ -173,11 +178,9 @@ Detailed prompts, verification, corrections, and ownership notes are maintained 
 
 ## 15. Open decisions
 
-- Implementation language and framework.
 - Exact public and downstream schemas.
 - Search audit schema and VIN privacy treatment.
 - Deduplication identity rule.
 - Result ordering rule.
 - Timeout values and overall request budget.
 - Whether retries will be implemented or documented only.
-

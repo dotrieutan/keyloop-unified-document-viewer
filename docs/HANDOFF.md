@@ -15,6 +15,9 @@ Day 1: Design and foundation.
 - Durable AI working instructions and planning documents have been created.
 - The initial architecture, sequence, assumptions, observability strategy, and scope boundaries are drafted.
 - A local Git repository has been initialized on the `main` branch.
+- Kotlin/Spring Boot and the stable technology baseline have been accepted.
+- Scenario D's UI language has been reconciled with the backend-only choice: Swagger UI and cURL will stub the client, and no custom frontend is required.
+- A requirements traceability matrix has been added.
 - No application code or technology-specific project has been scaffolded.
 - No test, build, or runtime command exists yet.
 
@@ -28,21 +31,20 @@ Day 1: Design and foundation.
 
 ## Decisions still required
 
-1. Select the language, framework, build system, and database migration tool.
-2. Finalize the public API response and partial-warning contract.
-3. Define downstream Sales and Service mock schemas.
-4. Define the audit schema and VIN privacy treatment.
-5. Define document deduplication and result ordering.
-6. Choose dependency timeouts and retry policy.
+1. Finalize the public API response and partial-warning contract.
+2. Define downstream Sales and Service mock schemas.
+3. Define the audit schema and VIN privacy treatment.
+4. Define document deduplication and result ordering.
+5. Choose dependency timeouts and retry policy.
 
 ## Exact next action
 
-Discuss the owner's strongest interview technology stack, select the implementation stack, and record the decision in `docs/DECISIONS.md`. Then update `AGENTS.md` with exact build, run, test, and formatting commands before scaffolding application code.
+Finalize the public and mocked downstream API contracts, record the decisions, and then scaffold the Kotlin/Spring Boot multi-module project. As part of scaffolding, add exact build, run, test, and formatting commands to `AGENTS.md` and `README.md`.
 
 ## Verification status
 
 - Documentation presence and internal file references: checked on July 13, 2026.
-- Git repository: initialized on the `main` branch; no commit has been created yet.
+- Git repository: initialized on the `main` branch; use `git log -1 --oneline` and `git status --short` to identify the latest checkpoint and any pending work.
 - Build: not available.
 - Tests: not available.
 - Runtime: not available.
@@ -56,4 +58,4 @@ Discuss the owner's strongest interview technology stack, select the implementat
 
 ## Resume prompt for another AI
 
-> Read `AGENTS.md`, `docs/PLAN.md`, `docs/SYSTEM_DESIGN.md`, `docs/DECISIONS.md`, and this handoff. Inspect the workspace before editing. Continue only the exact next action above. Do not select a technology stack without confirming the owner's interview fluency. After making changes, run all available checks and update this handoff with evidence and the next exact action.
+> Read `AGENTS.md`, `docs/PLAN.md`, `docs/REQUIREMENTS.md`, `docs/SYSTEM_DESIGN.md`, `docs/DECISIONS.md`, and this handoff. Inspect the workspace before editing. Continue only the exact next action above. Preserve the accepted Kotlin/Spring Boot baseline and backend-only scope. After making changes, run all available checks and update this handoff with evidence and the next exact action.

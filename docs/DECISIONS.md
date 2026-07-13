@@ -42,7 +42,7 @@ The implementation must expose a RESTful API and use a persistent database. A pr
 
 ## ADR-003: Use search auditing for persistence
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** July 13, 2026
 
 ### Context
@@ -63,7 +63,7 @@ The design must address data minimization, VIN privacy, retention, and persisten
 
 ## ADR-004: Preserve partial results
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** July 13, 2026
 
 ### Decision
@@ -80,12 +80,12 @@ The public contract and tests must distinguish complete success, partial success
 
 ## ADR-005: Technology stack
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** July 13, 2026
 
 ### Decision
 
-Pending discussion of the owner's strongest interview stack.
+Use Kotlin 2.4.0, Spring Boot 4.1.0, Java 25 LTS, Gradle 9.5.0 through the wrapper, PostgreSQL 18.4, and springdoc-openapi 3.0.3. Allow Spring Boot to manage compatible versions of Flyway, Testcontainers, Jackson, Micrometer, and other supported dependencies.
 
 ### Selection criteria
 
@@ -96,3 +96,23 @@ Pending discussion of the owner's strongest interview stack.
 - Database migration and OpenAPI support.
 - Structured logging and telemetry support.
 
+### Consequences
+
+The project adopts current major versions, including Spring Boot 4 and Java 25. Tests and a clean-checkout build must validate that the selected stable versions work together. Dependency versions managed by Spring Boot must not be overridden without a specific compatibility reason.
+
+## ADR-006: Stub the client with Swagger UI and cURL
+
+- **Status:** Accepted
+- **Date:** July 13, 2026
+
+### Context
+
+Scenario D's complete product includes a VIN search interface and an aggregated UI. The common implementation instructions require only one service layer to be implemented fully and explicitly allow backend candidates to mock or stub the client using a test harness, cURL examples, or an OpenAPI contract.
+
+### Decision
+
+Do not build a custom frontend. Provide Swagger UI backed by the OpenAPI contract plus reproducible cURL examples. Document the production UI in the system design.
+
+### Consequences
+
+The video can demonstrate VIN input and aggregated results interactively through Swagger UI. UI product behavior remains represented in the design and response contract, while implementation time stays focused on backend correctness, resilience, tests, and observability.

@@ -22,9 +22,10 @@ Before changing code, read these files in order:
 
 1. `docs/HANDOFF.md`
 2. `docs/PLAN.md`
-3. `docs/SYSTEM_DESIGN.md`
-4. `docs/DECISIONS.md`
-5. `docs/AI_COLLABORATION.md`
+3. `docs/REQUIREMENTS.md`
+4. `docs/SYSTEM_DESIGN.md`
+5. `docs/DECISIONS.md`
+6. `docs/AI_COLLABORATION.md`
 
 If these documents disagree, stop and resolve the inconsistency in the documents before implementing a materially different design.
 
@@ -35,11 +36,22 @@ Implement only:
 - one document aggregation backend,
 - two lightweight mocked downstream APIs,
 - persistent search-audit storage,
-- an OpenAPI contract and cURL-based demonstration,
+- an OpenAPI/Swagger UI client stub and cURL-based demonstration,
 - automated tests for core and failure behavior, and
 - local development tooling needed to build, run, and test the system.
 
 Do not add a production frontend, authentication, Kubernetes, messaging infrastructure, or cloud deployment unless the owner explicitly changes the scope.
+
+## Technology baseline
+
+- Kotlin 2.4.0
+- Spring Boot 4.1.0
+- Java 25 LTS
+- Gradle 9.5.0 via the Gradle Wrapper
+- PostgreSQL 18.4
+- springdoc-openapi 3.0.3
+
+Use the latest stable version that is compatible with this baseline. Prefer versions managed by Spring Boot instead of independently overriding every transitive dependency. Do not use milestone, release-candidate, snapshot, or experimental releases merely because they are newer.
 
 ## Engineering rules
 
@@ -68,7 +80,7 @@ For each implementation milestone:
 
 ## Commands
 
-The implementation technology has not been selected yet. Add exact build, run, test, format, and database commands here immediately after the stack decision is recorded.
+The implementation stack is selected but has not been scaffolded yet. Add exact build, run, test, format, and database commands here in the scaffolding milestone; do not invent commands before verifying them.
 
 ## Definition of done
 
@@ -81,4 +93,3 @@ The submission is done only when:
 - the system-design and AI-collaboration narratives match the code,
 - no secrets or machine-specific files are committed, and
 - the video demonstration steps have been rehearsed.
-

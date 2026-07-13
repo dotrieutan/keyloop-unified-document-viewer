@@ -31,16 +31,16 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 
 ### Outcomes
 
-- [ ] Call Sales and Service systems concurrently.
-- [ ] Enforce an independent timeout for each downstream call.
-- [ ] Normalize both downstream document formats.
-- [ ] Attribute every result to its source system.
-- [ ] Apply deterministic sorting and documented deduplication.
-- [ ] Preserve partial results when one downstream system fails.
-- [ ] Persist search audit records.
-- [ ] Add correlation IDs and structured logging.
-- [ ] Test success, partial failure, timeout, total failure, invalid VIN, empty results, duplicates, malformed responses, and persistence.
-- [ ] Document actual verification evidence.
+- [x] Call Sales and Service systems concurrently.
+- [x] Enforce an independent timeout for each downstream call.
+- [x] Normalize both downstream document formats.
+- [x] Attribute every result to its source system.
+- [x] Apply deterministic sorting and documented deduplication.
+- [x] Preserve partial results when one downstream system fails.
+- [x] Persist search audit records.
+- [x] Add correlation IDs and structured logging.
+- [x] Test success, partial failure, timeout, total failure, invalid VIN, empty results, duplicates, malformed responses, and persistence.
+- [x] Document actual verification evidence.
 
 ### Day 2 exit criteria
 

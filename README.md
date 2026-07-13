@@ -4,7 +4,7 @@ Backend service-layer implementation for **Scenario D: The Unified Document View
 
 ## Current status
 
-Day 1 foundation is complete: contracts are defined, the Kotlin/Spring Boot multi-module project builds, both mock APIs run, PostgreSQL and Flyway are verified, and VIN format logic is tested. Core document aggregation is the next milestone.
+The Scenario D backend is functionally complete. It concurrently aggregates both mocked systems, returns deterministic complete or partial responses, persists privacy-safe audit outcomes in PostgreSQL, exposes correlation-aware telemetry and Swagger UI, and is covered by unit, HTTP-contract, and PostgreSQL integration tests.
 
 See:
 
@@ -57,7 +57,7 @@ A dealership user needs one search interface for all documents related to a vehi
 - PostgreSQL 18.4
 - springdoc-openapi 3.0.3 for OpenAPI and Swagger UI
 
-Spring Boot dependency management will control compatible transitive library versions. The project will use current stable releases, not milestones, release candidates, snapshots, or experimental APIs.
+Spring Boot dependency management controls compatible transitive library versions. The project uses stable releases, not milestones, release candidates, snapshots, or experimental APIs.
 
 ## Client-side scope
 
@@ -68,7 +68,7 @@ Scenario D describes a search UI and aggregated view, but the assessment explici
 Prerequisites:
 
 - JDK 17 or newer to launch Gradle; Java 25 is automatically provisioned as the build toolchain.
-- Podman Compose or Docker Compose for PostgreSQL.
+- Podman Compose or Docker Compose for PostgreSQL and the Testcontainers integration test.
 
 Run the full build check:
 
@@ -104,6 +104,42 @@ Local endpoints:
 | Swagger UI | `http://localhost:8080/swagger-ui.html` |
 | Sales mock health | `http://localhost:8081/actuator/health` |
 | Service mock health | `http://localhost:8082/actuator/health` |
+| Prometheus metrics | `http://localhost:8080/actuator/prometheus` |
+
+## Try the API
+
+The mock fixtures use the final VIN character to make every important path reproducible:
+
+| VIN | Expected behavior |
+|---|---|
+| `WVWZZZ1JZXW000001` | `200 COMPLETE`, two Sales and two Service documents |
+| `WVWZZZ1JZXW000002` | `200 PARTIAL`, Sales unavailable |
+| `WVWZZZ1JZXW000003` | `200 PARTIAL`, Service exceeds the independent two-second timeout |
+| `WVWZZZ1JZXW000004` | `200 COMPLETE`, both sources valid but empty |
+| `WVWZZZ1JZXW000005` | `503`, both sources unavailable |
+| `WVWZZZ1JZXW000006` | `200 PARTIAL`, Sales returns a mismatched VIN and is classified as invalid |
+
+Complete result:
+
+```bash
+curl -i http://localhost:8080/api/v1/vehicles/WVWZZZ1JZXW000001/documents
+```
+
+Timeout with useful partial data:
+
+```bash
+curl -i http://localhost:8080/api/v1/vehicles/WVWZZZ1JZXW000003/documents
+```
+
+Caller correlation IDs are propagated when they are valid UUIDs; absent or invalid values are replaced:
+
+```bash
+curl -i \
+  -H 'X-Correlation-ID: 28ac4434-cbef-46df-8876-28b73c52f864' \
+  http://localhost:8080/api/v1/vehicles/WVWZZZ1JZXW000004/documents
+```
+
+The response body and header carry the same correlation ID. The database stores only its UUID, source outcomes, timing, result count, and a keyed HMAC-SHA256 VIN fingerprint—never the raw VIN or document metadata.
 
 Stop PostgreSQL when finished:
 

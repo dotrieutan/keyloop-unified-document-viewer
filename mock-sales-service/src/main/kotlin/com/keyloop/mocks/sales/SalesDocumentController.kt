@@ -23,6 +23,9 @@ class SalesDocumentController {
         if (vin.endsWith("4")) {
             return SalesDocumentResponse(vin, emptyList())
         }
+        if (vin.endsWith("6")) {
+            return SalesDocumentResponse("MISMATCHED00000000", emptyList())
+        }
 
         return SalesDocumentResponse(
             vehicleVin = vin,

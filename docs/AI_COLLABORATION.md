@@ -76,6 +76,25 @@ This document records how AI is directed, challenged, verified, and corrected th
 
 **Migration correction:** The aggregation service started and connected to PostgreSQL, but a direct schema query found no tables. In Spring Boot 4, the database-specific Flyway module is not sufficient to activate Boot's integration; `spring-boot-starter-flyway` is also required. The official Boot 4 initialization guide confirmed the modular starter requirement, so it was added before the migration was reverified.
 
+### July 13, 2026 - Core implementation and verification
+
+**Direction given to AI:** Proceed with the recommended Kotlin/Spring Boot backend and implement the Scenario D behavior without adding a custom UI.
+
+**AI contribution:**
+
+- Implemented separate Sales and Service HTTP adapters, correlation handling, concurrent orchestration, normalization, deterministic deduplication, complete/partial/failed responses, audit persistence, safe errors, metrics, and tests.
+- Added deterministic mock fixtures for unavailable, delayed, empty, total-failure, and invalid-response behavior.
+- Kept the public model independent from both source-specific schemas and kept raw VIN and document data out of persistence.
+
+**Verification and correction:**
+
+- The first implementation compile passed before tests were added.
+- Unit tests use a two-party synchronization barrier to prove the blocking source ports are entered concurrently without relying on fragile wall-clock thresholds.
+- Mock HTTP tests verify each source schema and correlation header independently.
+- The initial PostgreSQL integration test exposed that `CrudRepository.save` treated an application-assigned UUID as an existing aggregate and issued an update instead of an insert. The write path was corrected to use `JdbcAggregateTemplate.insert`, which states the intended operation explicitly; the focused PostgreSQL 18.4 test then passed.
+- Reviewing the generated JUnit XML showed that two expression-bodied coroutine tests compiled but were not discovered because Kotlin inferred a non-`Unit` return type. Explicit `Unit` return types restored discovery, and the final report was checked for all 14 expected test cases.
+- Live HTTP probes verified complete, partial, timeout, empty, total-failure, invalid-downstream, and invalid-VIN behavior. Direct SQL verified persisted outcomes and 64-character HMAC fingerprints; Prometheus output verified request and source metrics.
+
 ## Verification ledger
 
 | Date | Artifact or behavior | Verification | Result |
@@ -91,6 +110,12 @@ This document records how AI is directed, challenged, verified, and corrected th
 | 2026-07-13 | First healthy service startup | Health probes for ports 8080, 8081, and 8082 plus Swagger redirect | Complete |
 | 2026-07-13 | Initial migration verification | Direct `pg_tables` query returned no tables | Spring Boot 4 Flyway starter added |
 | 2026-07-13 | Corrected migration verification | Flyway startup logs plus direct `pg_tables` query | `flyway_schema_history` and `document_search_audit` present |
+| 2026-07-13 | Core compilation | Aggregator formatting plus Kotlin compilation | Complete |
+| 2026-07-13 | Core automated behavior | Multi-module Gradle tests and ktlint | Initial persistence test found a defect; corrected |
+| 2026-07-13 | Persistence correction | Focused Testcontainers PostgreSQL 18.4 integration test | Complete |
+| 2026-07-13 | Live acceptance paths | cURL against seven deterministic fixtures | Expected 200/400/503 and COMPLETE/PARTIAL outcomes verified |
+| 2026-07-13 | Live persistence and telemetry | Direct PostgreSQL query plus Prometheus scrape | Expected privacy-safe rows and tagged metrics verified |
+| 2026-07-13 | Final automated check | `./gradlew test ktlintCheck --no-daemon --console plain`; JUnit XML count reviewed | 14 tests and all style checks complete |
 
 ## AI mistakes and corrections
 
@@ -105,6 +130,10 @@ AI initially used the traditional `/var/lib/postgresql/data` volume destination.
 ### Missing Spring Boot 4 Flyway starter
 
 AI added Flyway's PostgreSQL database module based on older Spring Boot conventions. The application connected successfully but did not run migrations. A direct database query exposed the missing table, and the Spring Boot 4 guide confirmed that `spring-boot-starter-flyway` must activate the integration in addition to the database-specific Flyway module.
+
+### Incorrect Spring Data JDBC save semantics for an assigned ID
+
+AI initially called `CrudRepository.save` with a preassigned UUID. Spring Data JDBC interpreted the non-null identifier as an existing row and performed an update, so the method returned without inserting anything. A real PostgreSQL integration test—not compilation or a repository mock—caught the missing row. The audit writer now uses `JdbcAggregateTemplate.insert`, making new-record intent explicit and avoiding ambiguous entity-state detection.
 
 ## Final narrative prompts
 

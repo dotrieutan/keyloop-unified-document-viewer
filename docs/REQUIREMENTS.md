@@ -42,17 +42,17 @@ A custom production frontend is not required and is out of scope.
 - [x] Technology selection and justification recorded.
 - [x] Observability strategy drafted.
 - [x] GenAI design-phase usage documented.
-- [ ] Review and finalize all sections against the implementation.
+- [x] Review and finalize all sections against the implementation.
 
 ## Repository deliverables
 
 - [x] Git repository initialized.
 - [x] README structure created.
 - [x] Dedicated AI collaboration narrative created.
-- [ ] Working backend implementation.
-- [ ] Clear clean-checkout build, run, and test instructions.
-- [ ] Automated tests for core business logic and dependency failures.
-- [ ] Final OpenAPI contract and cURL examples.
+- [x] Working backend implementation.
+- [x] Clear clean-checkout build, run, and test instructions.
+- [x] Automated tests for core business logic and dependency failures.
+- [x] Final OpenAPI contract and cURL examples.
 
 ## Video deliverables
 
@@ -76,4 +76,3 @@ The submission will be considered functionally complete when it demonstrates:
 7. A persisted audit outcome for complete, partial, empty, and failed searches.
 8. Automated tests for core success and failure behavior.
 9. Interactive backend demonstration through Swagger UI without a custom frontend.
-

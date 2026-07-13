@@ -6,7 +6,7 @@ July 13, 2026
 
 ## Current milestone
 
-Day 1: Design and foundation.
+Day 2 behavior and verification are complete; Day 3 submission polish is next.
 
 ## Current state
 
@@ -24,6 +24,13 @@ Day 1: Design and foundation.
 - Mock fixtures provide success, empty, downstream failure, and delayed-response VIN cases.
 - VIN normalization and format validation have unit tests.
 - All application health endpoints and the Swagger UI redirect have been verified.
+- The public REST endpoint concurrently calls both source adapters using Kotlin coroutines and independent two-second HTTP timeouts.
+- Sales and Service schemas are normalized into a deterministic, source-attributed response with source-scoped deduplication.
+- Complete, partial, empty, invalid-response, timeout, and total-failure semantics are implemented.
+- Correlation IDs are propagated or generated and emitted in safe structured logs and responses.
+- Every completed downstream search synchronously inserts a privacy-safe audit row using an HMAC-SHA256 VIN fingerprint.
+- Prometheus metrics cover overall outcomes, duration, returned document count, and per-source outcomes.
+- Unit, mock-HTTP contract, correlation, privacy, concurrency, and PostgreSQL 18.4 integration tests are implemented.
 
 ## Accepted decisions
 
@@ -35,31 +42,28 @@ Day 1: Design and foundation.
 
 ## Decisions still required
 
-1. Implement the aggregation service domain and public response models.
-2. Implement both downstream HTTP clients with independent two-second timeouts.
-3. Execute both client calls concurrently and apply complete/partial/failed semantics.
-4. Implement deterministic normalization, source-scoped deduplication, and ordering.
-5. Persist the HMAC VIN audit record and expose the public controller.
+No functional architecture decision remains. Day 3 decisions are limited to presentation polish, repository publication, and the video host/link.
 
 ## Exact next action
 
-Implement the core aggregation slice from HTTP request through both mocked dependencies to the normalized response and synchronous audit write. Add focused tests for complete success, partial failure, total failure, ordering, and persistence.
+Perform the Day 3 clean-start review: refine code and README clarity, run the final full check from a clean local state, rehearse the documented success and timeout demonstrations, then prepare GitHub publication and the 5-10 minute walkthrough.
 
 ## Verification status
 
 - Documentation presence and internal file references: checked on July 13, 2026.
 - Git repository: initialized on the `main` branch; use `git log -1 --oneline` and `git status --short` to identify the latest checkpoint and any pending work.
-- Build and formatting: `./gradlew test ktlintCheck --no-daemon --console plain` passed on Java 25.0.1.
-- Tests: three VIN unit tests passed; mock modules currently have no tests.
-- Runtime: ports 8080, 8081, and 8082 reported health `UP`; Swagger returned a redirect.
-- Persistence: PostgreSQL 18.4 reported healthy and Flyway created `flyway_schema_history` plus `document_search_audit`.
+- Build and formatting: `./gradlew test ktlintCheck --no-daemon --console plain` passed after the persistence and coroutine-test-discovery corrections.
+- Tests: 14 tests cover VIN validation, correlation IDs, both downstream schema adapters, invalid responses, concurrency, aggregation policies, deduplication, audit privacy, and real PostgreSQL persistence.
+- Runtime: all three services started successfully. Fixture `...000001` returned `200 COMPLETE` with four ordered documents in 0.27 seconds; `...000003` returned `200 PARTIAL` with a Service `TIMEOUT` in 2.10 seconds; `...000005` returned an RFC 9457-style `503`; malformed VIN returned `400`.
+- Persistence: PostgreSQL rows were queried directly and contained COMPLETE, PARTIAL, FAILED, EMPTY, TIMEOUT, UNAVAILABLE, and INVALID_RESPONSE outcomes with 64-character VIN fingerprints.
+- Observability: the live Prometheus endpoint exposed request counts/durations/result distributions and per-source outcome counters; a supplied correlation UUID was echoed in both header and response body.
 
 ## Known risks
 
-- The aggregator has only foundation code; core acceptance behavior remains unimplemented.
 - The synchronous audit requirement means database failure will fail the request and must be tested and explained.
-- Mock behavior is VIN-fixture-driven and must be clearly documented before the video.
-- Day 2 functionality must remain focused so Day 3 stays available for documentation and presentation.
+- Mock behavior is VIN-fixture-driven; the fixture table is now in the README and should be rehearsed before recording.
+- Testcontainers requires a Docker-compatible runtime; Podman was verified locally.
+- The static OpenAPI contract and generated Swagger contract should receive one final visual comparison during Day 3.
 
 ## Resume prompt for another AI
 

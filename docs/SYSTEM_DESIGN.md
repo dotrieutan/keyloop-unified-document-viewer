@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft. The scenario, service-layer choice, and implementation stack are accepted; the detailed API schemas remain to be decided.
+Implemented and verified on July 13, 2026. Day 3 remains for submission polish and video rehearsal.
 
 ## 1. Problem statement
 
@@ -193,8 +193,12 @@ Sales and Service responses are translated into one public document model. Ident
 
 The combined result is sorted by creation time descending, then source system and source document ID ascending. This makes the API deterministic regardless of parallel completion order.
 
-## 16. Remaining implementation-level decisions
+## 16. Implementation structure
 
-- Exact Kotlin package names and internal class boundaries.
-- Whether the mock services share fixture helpers or keep independent fixture code.
-- Local container orchestration details after the first verified build.
+- `api`: public controller, RFC 9457 error translation, response models, and correlation filter.
+- `service`: concurrent orchestration, complete/partial/failed policy, metrics, normalization, deduplication, and ordering.
+- `client`: one adapter per source-specific HTTP contract and bounded failure classification.
+- `audit`: the Spring Data JDBC aggregate, repository, HMAC fingerprinting, and required insert boundary.
+- `domain`: VIN and source-neutral document models plus the source-client port.
+
+The mock services deliberately keep independent DTOs and fixture behavior. This makes schema translation visible rather than creating an unrealistic shared model between separately owned systems. PostgreSQL is orchestrated through `compose.yml`; Testcontainers starts an isolated PostgreSQL 18.4 database for the persistence integration test.

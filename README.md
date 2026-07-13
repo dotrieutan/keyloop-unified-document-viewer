@@ -4,7 +4,7 @@ Backend service-layer implementation for **Scenario D: The Unified Document View
 
 ## Current status
 
-Planning and architecture setup. Application code has not been scaffolded yet.
+Day 1 foundation is complete: contracts are defined, the Kotlin/Spring Boot multi-module project builds, both mock APIs run, PostgreSQL and Flyway are verified, and VIN format logic is tested. Core document aggregation is the next milestone.
 
 See:
 
@@ -35,6 +35,10 @@ A dealership user needs one search interface for all documents related to a vehi
 .
 |-- AGENTS.md
 |-- README.md
+|-- aggregator-service
+|-- mock-sales-service
+|-- mock-service-service
+|-- compose.yml
 `-- docs
     |-- AI_COLLABORATION.md
     |-- DECISIONS.md
@@ -43,8 +47,6 @@ A dealership user needs one search interface for all documents related to a vehi
     |-- REQUIREMENTS.md
     `-- SYSTEM_DESIGN.md
 ```
-
-The application and mock-service directories will be added during the next milestone.
 
 ## Selected technology baseline
 
@@ -63,7 +65,51 @@ Scenario D describes a search UI and aggregated view, but the assessment explici
 
 ## Build, run, and test
 
-To be added as part of the first implementation milestone. The final submission will provide one-command local startup and exact test instructions.
+Prerequisites:
+
+- JDK 17 or newer to launch Gradle; Java 25 is automatically provisioned as the build toolchain.
+- Podman Compose or Docker Compose for PostgreSQL.
+
+Run the full build check:
+
+```bash
+./gradlew test ktlintCheck
+```
+
+Format Kotlin and Gradle Kotlin DSL files:
+
+```bash
+./gradlew ktlintFormat
+```
+
+Start PostgreSQL:
+
+```bash
+podman compose up -d postgres
+```
+
+Then start each service in a separate terminal:
+
+```bash
+./gradlew :mock-sales-service:bootRun
+./gradlew :mock-service-service:bootRun
+./gradlew :aggregator-service:bootRun
+```
+
+Local endpoints:
+
+| Component | URL |
+|---|---|
+| Aggregator health | `http://localhost:8080/actuator/health` |
+| Swagger UI | `http://localhost:8080/swagger-ui.html` |
+| Sales mock health | `http://localhost:8081/actuator/health` |
+| Service mock health | `http://localhost:8082/actuator/health` |
+
+Stop PostgreSQL when finished:
+
+```bash
+podman compose down
+```
 
 ## AI collaboration narrative
 

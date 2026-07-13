@@ -50,6 +50,8 @@ Do not add a production frontend, authentication, Kubernetes, messaging infrastr
 - Gradle 9.5.0 via the Gradle Wrapper
 - PostgreSQL 18.4
 - springdoc-openapi 3.0.3
+- Testcontainers 2.0.5 BOM
+- ktlint Gradle plugin 14.2.0
 
 Use the latest stable version that is compatible with this baseline. Prefer versions managed by Spring Boot instead of independently overriding every transitive dependency. Do not use milestone, release-candidate, snapshot, or experimental releases merely because they are newer.
 
@@ -80,7 +82,29 @@ For each implementation milestone:
 
 ## Commands
 
-The implementation stack is selected but has not been scaffolded yet. Add exact build, run, test, format, and database commands here in the scaffolding milestone; do not invent commands before verifying them.
+Run commands from the repository root.
+
+```bash
+# Compile and test every module
+./gradlew test
+
+# Run the full submission check
+./gradlew test ktlintCheck
+
+# Apply Kotlin and Gradle Kotlin DSL formatting
+./gradlew ktlintFormat
+
+# Start and stop PostgreSQL 18.4
+podman compose up -d postgres
+podman compose down
+
+# Start each application in its own terminal
+./gradlew :mock-sales-service:bootRun
+./gradlew :mock-service-service:bootRun
+./gradlew :aggregator-service:bootRun
+```
+
+Docker Compose can be used instead of Podman Compose when available. Gradle runs on JDK 17 or newer and automatically provisions the Java 25 compilation toolchain through the checked-in toolchain resolver.
 
 ## Definition of done
 

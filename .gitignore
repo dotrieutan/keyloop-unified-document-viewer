@@ -23,9 +23,9 @@ out/
 coverage/
 node_modules/
 .gradle/
+.gradle-user-home/
 
 # Local databases
 *.db
 *.sqlite
 *.sqlite3
-

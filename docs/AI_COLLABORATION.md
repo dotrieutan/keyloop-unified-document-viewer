@@ -70,6 +70,12 @@ This document records how AI is directed, challenged, verified, and corrected th
 - Java 25 LTS was chosen instead of the newer non-LTS Java 26 line to provide a defensible production baseline.
 - Spring Boot dependency management will control compatible transitive library versions rather than forcing every library independently.
 
+**Build correction:** The first dependency-resolution run showed unresolved Testcontainers modules. AI initially assumed Spring Boot 4.1 would manage them and also used the pre-2.0 artifact names. After checking the official 2.0.5 documentation, the project imported the Testcontainers BOM and corrected the modules to `testcontainers-junit-jupiter` and `testcontainers-postgresql`. Configuration cache was also disabled after the unresolved classpath triggered a secondary cache-serialization failure; correctness and repeatability take priority over that optimization.
+
+**Runtime correction:** The first PostgreSQL 18.4 container exited because the Compose file used the pre-18 `/var/lib/postgresql/data` mount. PostgreSQL 18 images require the volume at `/var/lib/postgresql` to support major-version-specific data directories. Container logs identified the issue; the empty project-local volume was removed and the mount was corrected before retrying.
+
+**Migration correction:** The aggregation service started and connected to PostgreSQL, but a direct schema query found no tables. In Spring Boot 4, the database-specific Flyway module is not sufficient to activate Boot's integration; `spring-boot-starter-flyway` is also required. The official Boot 4 initialization guide confirmed the modular starter requirement, so it was added before the migration was reverified.
+
 ## Verification ledger
 
 | Date | Artifact or behavior | Verification | Result |
@@ -79,10 +85,26 @@ This document records how AI is directed, challenged, verified, and corrected th
 | 2026-07-13 | Repository initialization | `git init -b main` and Git status inspection | Complete |
 | 2026-07-13 | Scenario D UI interpretation | Re-extracted assessment pages 2-4 and mapped scenario wording to the backend-choice clause | Complete |
 | 2026-07-13 | Technology versions | Checked current stable releases in official project documentation | Complete |
+| 2026-07-13 | Initial dependency resolution | `./gradlew test ktlintCheck`; detected missing Testcontainers versions and a secondary configuration-cache failure | Corrected |
+| 2026-07-13 | Corrected JVM build | `./gradlew test ktlintCheck --no-daemon --console plain` on provisioned Java 25.0.1 | Complete |
+| 2026-07-13 | Initial PostgreSQL startup | `podman compose up -d postgres`, aggregator startup, and container logs | PostgreSQL 18 mount corrected |
+| 2026-07-13 | First healthy service startup | Health probes for ports 8080, 8081, and 8082 plus Swagger redirect | Complete |
+| 2026-07-13 | Initial migration verification | Direct `pg_tables` query returned no tables | Spring Boot 4 Flyway starter added |
+| 2026-07-13 | Corrected migration verification | Flyway startup logs plus direct `pg_tables` query | `flyway_schema_history` and `document_search_audit` present |
 
 ## AI mistakes and corrections
 
-Record every material AI error here, including how it was detected and corrected. None recorded yet.
+### Incorrect Testcontainers management assumption
+
+AI assumed Spring Boot 4.1 would manage the Testcontainers test modules because earlier Spring Boot lines commonly did, and it used the pre-2.0 artifact names. Gradle resolved them with empty versions and failed the build. Official Testcontainers documentation showed that 2.0 prefixes module names with `testcontainers-`. The failure was corrected by importing the 2.0.5 BOM and using the new coordinates, and the correction was retained as evidence of build-driven AI verification.
+
+### Outdated PostgreSQL container mount
+
+AI initially used the traditional `/var/lib/postgresql/data` volume destination. PostgreSQL 18 changed its image layout and rejected that mount. The container logs explained the version-specific directory strategy, so the Compose configuration was updated to mount `/var/lib/postgresql` and the failed empty volume was safely recreated.
+
+### Missing Spring Boot 4 Flyway starter
+
+AI added Flyway's PostgreSQL database module based on older Spring Boot conventions. The application connected successfully but did not run migrations. A direct database query exposed the missing table, and the Spring Boot 4 guide confirmed that `spring-boot-starter-flyway` must activate the integration in addition to the database-specific Flyway module.
 
 ## Final narrative prompts
 

@@ -12,13 +12,13 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 - [x] Establish durable repository instructions and handoff documentation.
 - [x] Select and record the implementation technology stack.
 - [x] Reconcile Scenario D's UI wording with the backend-only implementation choice.
-- [ ] Resolve and document the remaining product assumptions.
-- [ ] Define the normalized API contract and downstream mock contracts.
-- [ ] Complete the architecture and request-sequence diagrams.
-- [ ] Scaffold the aggregation API and both mocked downstream APIs.
-- [ ] Configure persistent local database startup.
-- [ ] Implement basic health endpoints and VIN validation.
-- [ ] Add exact build, run, format, and test commands to `AGENTS.md` and `README.md`.
+- [x] Resolve and document the remaining product assumptions.
+- [x] Define the normalized API contract and downstream mock contracts.
+- [x] Complete the architecture and request-sequence diagrams.
+- [x] Scaffold the aggregation API and both mocked downstream APIs.
+- [x] Configure persistent local database startup.
+- [x] Implement basic health endpoints and VIN validation.
+- [x] Add exact build, run, format, and test commands to `AGENTS.md` and `README.md`.
 
 ### Day 1 exit criteria
 

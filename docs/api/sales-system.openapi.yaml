@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: Mock Sales System API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+paths:
+  /api/sales/vehicles/{vin}/documents:
+    get:
+      operationId: getSalesDocuments
+      parameters:
+        - name: vin
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-HJ-NPR-Z0-9]{17}$'
+        - name: X-Correlation-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sales documents for the vehicle, including a valid empty list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesDocumentResponse'
+        '500':
+          description: Deterministic mocked failure for demonstration fixtures.
+components:
+  schemas:
+    SalesDocumentResponse:
+      type: object
+      required:
+        - vehicleVin
+        - records
+      properties:
+        vehicleVin:
+          type: string
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesDocument'
+    SalesDocument:
+      type: object
+      required:
+        - documentId
+        - category
+        - displayName
+        - createdOn
+        - downloadUri
+      properties:
+        documentId:
+          type: string
+        category:
+          type: string
+        displayName:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        downloadUri:
+          type: string
+          format: uri
+

@@ -18,8 +18,12 @@ Day 1: Design and foundation.
 - Kotlin/Spring Boot and the stable technology baseline have been accepted.
 - Scenario D's UI language has been reconciled with the backend-only choice: Swagger UI and cURL will stub the client, and no custom frontend is required.
 - A requirements traceability matrix has been added.
-- No application code or technology-specific project has been scaffolded.
-- No test, build, or runtime command exists yet.
+- The Gradle 9.5.0 wrapper and Java 25 auto-provisioning are configured.
+- Three Spring Boot 4.1/Kotlin 2.4 modules are scaffolded: aggregator, Sales mock, and Service mock.
+- PostgreSQL 18.4 Compose startup and the Flyway V1 audit migration are verified.
+- Mock fixtures provide success, empty, downstream failure, and delayed-response VIN cases.
+- VIN normalization and format validation have unit tests.
+- All application health endpoints and the Swagger UI redirect have been verified.
 
 ## Accepted decisions
 
@@ -31,30 +35,31 @@ Day 1: Design and foundation.
 
 ## Decisions still required
 
-1. Finalize the public API response and partial-warning contract.
-2. Define downstream Sales and Service mock schemas.
-3. Define the audit schema and VIN privacy treatment.
-4. Define document deduplication and result ordering.
-5. Choose dependency timeouts and retry policy.
+1. Implement the aggregation service domain and public response models.
+2. Implement both downstream HTTP clients with independent two-second timeouts.
+3. Execute both client calls concurrently and apply complete/partial/failed semantics.
+4. Implement deterministic normalization, source-scoped deduplication, and ordering.
+5. Persist the HMAC VIN audit record and expose the public controller.
 
 ## Exact next action
 
-Finalize the public and mocked downstream API contracts, record the decisions, and then scaffold the Kotlin/Spring Boot multi-module project. As part of scaffolding, add exact build, run, test, and formatting commands to `AGENTS.md` and `README.md`.
+Implement the core aggregation slice from HTTP request through both mocked dependencies to the normalized response and synchronous audit write. Add focused tests for complete success, partial failure, total failure, ordering, and persistence.
 
 ## Verification status
 
 - Documentation presence and internal file references: checked on July 13, 2026.
 - Git repository: initialized on the `main` branch; use `git log -1 --oneline` and `git status --short` to identify the latest checkpoint and any pending work.
-- Build: not available.
-- Tests: not available.
-- Runtime: not available.
+- Build and formatting: `./gradlew test ktlintCheck --no-daemon --console plain` passed on Java 25.0.1.
+- Tests: three VIN unit tests passed; mock modules currently have no tests.
+- Runtime: ports 8080, 8081, and 8082 reported health `UP`; Swagger returned a redirect.
+- Persistence: PostgreSQL 18.4 reported healthy and Flyway created `flyway_schema_history` plus `document_search_audit`.
 
 ## Known risks
 
-- A stack chosen for novelty rather than interview fluency will weaken the walkthrough.
-- The assessment requires persistence even though Scenario D does not naturally own document data; the audit-only interpretation must be clearly justified.
-- Retry behavior can make latency and failure semantics harder to reason about; it should not be added automatically.
-- Day 1 must end with a runnable skeleton to protect Day 3 for documentation and video work.
+- The aggregator has only foundation code; core acceptance behavior remains unimplemented.
+- The synchronous audit requirement means database failure will fail the request and must be tested and explained.
+- Mock behavior is VIN-fixture-driven and must be clearly documented before the video.
+- Day 2 functionality must remain focused so Day 3 stays available for documentation and presentation.
 
 ## Resume prompt for another AI
 

@@ -1,0 +1,221 @@
+openapi: 3.1.0
+info:
+  title: Keyloop Unified Document Viewer API
+  version: 1.0.0
+  description: Backend contract for aggregating vehicle document metadata from Sales and Service systems.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+paths:
+  /api/v1/vehicles/{vin}/documents:
+    get:
+      operationId: searchVehicleDocuments
+      summary: Find all available document metadata for a vehicle
+      parameters:
+        - $ref: '#/components/parameters/Vin'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Complete results, or useful partial results when one source is unavailable.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentSearchResponse'
+        '400':
+          description: The VIN is malformed.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '503':
+          description: Neither source system produced a usable response.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: The request could not be completed, including when its required audit record cannot be persisted.
+          headers:
+            X-Correlation-ID:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  parameters:
+    Vin:
+      name: vin
+      in: path
+      required: true
+      description: A 17-character VIN. Letters I, O, and Q are not valid VIN characters.
+      schema:
+        type: string
+        pattern: '^[A-HJ-NPR-Z0-9]{17}$'
+        example: WVWZZZ1JZXW000001
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      description: Optional caller-supplied correlation identifier. A UUID is generated when absent or invalid.
+      schema:
+        type: string
+        format: uuid
+  headers:
+    CorrelationId:
+      description: Correlation identifier for logs and support diagnostics.
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    DocumentSearchResponse:
+      type: object
+      required:
+        - correlationId
+        - vin
+        - status
+        - retrievedAt
+        - documents
+        - sources
+        - warnings
+      properties:
+        correlationId:
+          type: string
+          format: uuid
+        vin:
+          type: string
+          pattern: '^[A-HJ-NPR-Z0-9]{17}$'
+        status:
+          $ref: '#/components/schemas/SearchStatus'
+        retrievedAt:
+          type: string
+          format: date-time
+        documents:
+          type: array
+          description: Newest first, then source system and source document ID for deterministic ties.
+          items:
+            $ref: '#/components/schemas/VehicleDocument'
+        sources:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/SourceResult'
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceWarning'
+    SearchStatus:
+      type: string
+      enum:
+        - COMPLETE
+        - PARTIAL
+    VehicleDocument:
+      type: object
+      required:
+        - id
+        - sourceSystem
+        - type
+        - title
+        - createdAt
+        - downloadUrl
+      properties:
+        id:
+          type: string
+          description: Identifier assigned by the source system; unique only within that source.
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        type:
+          type: string
+          example: SALES_INVOICE
+        title:
+          type: string
+          example: Vehicle sales invoice
+        createdAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+          format: uri
+    SourceResult:
+      type: object
+      required:
+        - sourceSystem
+        - status
+        - documentCount
+      properties:
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        status:
+          $ref: '#/components/schemas/SourceStatus'
+        documentCount:
+          type: integer
+          minimum: 0
+    SourceWarning:
+      type: object
+      required:
+        - sourceSystem
+        - code
+        - message
+      properties:
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        code:
+          type: string
+          enum:
+            - TIMEOUT
+            - UNAVAILABLE
+            - INVALID_RESPONSE
+        message:
+          type: string
+          description: Stable client-safe message without raw downstream details.
+    SourceSystem:
+      type: string
+      enum:
+        - SALES
+        - SERVICE
+    SourceStatus:
+      type: string
+      enum:
+        - SUCCESS
+        - EMPTY
+        - TIMEOUT
+        - UNAVAILABLE
+        - INVALID_RESPONSE
+    Problem:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+        - instance
+        - correlationId
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri-reference
+        correlationId:
+          type: string
+          format: uuid
+

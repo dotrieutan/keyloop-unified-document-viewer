@@ -31,7 +31,7 @@ Dealership users currently need to consult separate Sales and Service systems to
 
 ## 3. Initial assumptions
 
-These assumptions must be validated or explicitly retained before implementation:
+The following assumptions are accepted for the implementation:
 
 1. The API returns document metadata and retrievable document references, not document binary content.
 2. A search is considered partially successful when one downstream system succeeds and the other fails or times out.
@@ -94,28 +94,39 @@ sequenceDiagram
 
 ## 7. Public API contract
 
-To be finalized before scaffolding. The contract must define:
+The public contract is defined in `docs/api/openapi.yaml`:
 
-- VIN path or query parameter and validation errors.
-- Normalized document fields.
-- Source-system enum.
-- Partial-result warning representation.
-- Empty, partial, total-failure, and unexpected-error semantics.
-- Correlation ID exposure.
+- `GET /api/v1/vehicles/{vin}/documents`.
+- `200 COMPLETE` when both dependencies respond validly, including when both return no documents.
+- `200 PARTIAL` with source warnings when exactly one dependency is unusable.
+- `400` RFC 9457-style problem for malformed VINs.
+- `503` RFC 9457-style problem when neither dependency produces usable data.
+- `500` when the required audit record cannot be persisted or another unexpected internal error occurs.
+- Correlation ID in both the response body and `X-Correlation-ID` header.
+
+The mocked dependency contracts are defined separately in `docs/api/sales-system.openapi.yaml` and `docs/api/service-system.openapi.yaml` to make the normalization boundary visible.
 
 ## 8. Persistence strategy
 
-Persist minimal search audit data such as normalized VIN or a privacy-preserving derivative, request timestamp, correlation ID, dependency outcomes, result count, overall outcome, and latency. Do not persist document bodies or URLs without a demonstrated requirement.
+Persist one search audit record with:
 
-The final schema and retention assumptions remain to be recorded.
+- UUID primary key and correlation ID,
+- HMAC-SHA256 fingerprint of the normalized VIN,
+- request and completion timestamps,
+- overall outcome,
+- Sales and Service outcomes,
+- result count, and
+- duration in milliseconds.
+
+The raw VIN, document metadata, document URLs, and downstream error bodies are not stored. The write is synchronous and required before returning the API response.
 
 ## 9. Reliability strategy
 
 - Concurrent downstream calls to minimize combined latency.
-- Independent, configurable dependency timeouts.
+- Independent, configurable two-second dependency timeouts.
 - Partial results for a single dependency failure.
 - Bounded error responses for total failure.
-- No automatic retries until retry safety, latency budget, and mock behavior are explicitly decided.
+- No automatic retries in this implementation; production retries require an explicit latency and load-shedding policy.
 - No circuit-breaker implementation unless time permits; document the production strategy instead.
 
 ## 10. Observability strategy
@@ -165,7 +176,7 @@ The final schema and retention assumptions remain to be recorded.
 | PostgreSQL | 18.4 | Current stable PostgreSQL major and minor release for persistent search auditing. |
 | Flyway | Spring Boot managed | Versioned, reviewable database schema migrations without an independently forced version. |
 | springdoc-openapi | 3.0.3 | Current stable Spring Boot 4-compatible line, supplying the OpenAPI contract and Swagger UI client stub. |
-| Testcontainers | Spring Boot managed | Real PostgreSQL integration tests without requiring a shared developer database. |
+| Testcontainers | 2.0.5 BOM | Real PostgreSQL integration tests without requiring a shared developer database. The BOM is explicit because Spring Boot 4.1 did not supply these test-module versions in the verified build. |
 | Docker Compose | Host installation | Reproducible local database and mock-service demonstration environment where useful. |
 
 “Latest” means the latest stable, mutually compatible release verified on July 13, 2026. Milestones, release candidates, snapshots, and experimental APIs are excluded.
@@ -176,11 +187,14 @@ AI assisted with extracting the assessment, comparing the four scenarios, identi
 
 Detailed prompts, verification, corrections, and ownership notes are maintained in `docs/AI_COLLABORATION.md`.
 
-## 15. Open decisions
+## 15. Normalization, identity, and ordering
 
-- Exact public and downstream schemas.
-- Search audit schema and VIN privacy treatment.
-- Deduplication identity rule.
-- Result ordering rule.
-- Timeout values and overall request budget.
-- Whether retries will be implemented or documented only.
+Sales and Service responses are translated into one public document model. Identity is `(sourceSystem, sourceDocumentId)`, so duplicates are removed only within one source. Cross-system records are preserved. When the same source repeats an identity, the newest timestamp wins and the lexicographically smallest title breaks a tie.
+
+The combined result is sorted by creation time descending, then source system and source document ID ascending. This makes the API deterministic regardless of parallel completion order.
+
+## 16. Remaining implementation-level decisions
+
+- Exact Kotlin package names and internal class boundaries.
+- Whether the mock services share fixture helpers or keep independent fixture code.
+- Local container orchestration details after the first verified build.

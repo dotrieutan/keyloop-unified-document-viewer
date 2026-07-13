@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: Mock Service System API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082
+paths:
+  /api/service/documents:
+    get:
+      operationId: getServiceDocuments
+      parameters:
+        - name: vin
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-HJ-NPR-Z0-9]{17}$'
+        - name: X-Correlation-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Service documents for the vehicle, including a valid empty list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDocumentResponse'
+        '500':
+          description: Deterministic mocked failure for demonstration fixtures.
+components:
+  schemas:
+    ServiceDocumentResponse:
+      type: object
+      required:
+        - vin
+        - items
+      properties:
+        vin:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceDocument'
+    ServiceDocument:
+      type: object
+      required:
+        - reference
+        - documentType
+        - description
+        - issuedAt
+        - link
+      properties:
+        reference:
+          type: string
+        documentType:
+          type: string
+        description:
+          type: string
+        issuedAt:
+          type: string
+          format: date-time
+        link:
+          type: string
+          format: uri
+

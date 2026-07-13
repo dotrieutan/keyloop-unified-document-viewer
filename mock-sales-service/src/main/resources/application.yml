@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: mock-sales-service
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: ${SERVER_PORT:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+

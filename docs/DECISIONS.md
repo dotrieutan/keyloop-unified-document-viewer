@@ -116,3 +116,68 @@ Do not build a custom frontend. Provide Swagger UI backed by the OpenAPI contrac
 ### Consequences
 
 The video can demonstrate VIN input and aggregated results interactively through Swagger UI. UI product behavior remains represented in the design and response contract, while implementation time stays focused on backend correctness, resilience, tests, and observability.
+
+## ADR-007: Public API and partial-failure semantics
+
+- **Status:** Accepted
+- **Date:** July 13, 2026
+
+### Decision
+
+Expose `GET /api/v1/vehicles/{vin}/documents`. Return `200 COMPLETE` when both sources produce valid responses, including empty responses. Return `200 PARTIAL` with source-specific warnings when exactly one source fails or times out. Return an RFC 9457-style `503` problem when neither source produces a usable response. Invalid VINs return `400`.
+
+### Consequences
+
+The response contains normalized documents, per-source outcomes, client-safe warnings, retrieval time, and the correlation ID. The same correlation ID is returned in the `X-Correlation-ID` header.
+
+## ADR-008: VIN validation and audit privacy
+
+- **Status:** Accepted
+- **Date:** July 13, 2026
+
+### Decision
+
+Normalize VINs to uppercase and validate the global 17-character format, excluding I, O, and Q. Do not implement the North American check-digit algorithm because it is not globally applicable and was not requested. Persist an HMAC-SHA256 VIN fingerprint using a configurable secret; never persist the raw VIN or document metadata in the audit table.
+
+### Consequences
+
+The audit schema stores correlation ID, VIN fingerprint, request and completion timestamps, overall outcome, both dependency outcomes, result count, and duration. The local environment may use a clearly marked development-only HMAC key.
+
+## ADR-009: Timeout and retry policy
+
+- **Status:** Accepted
+- **Date:** July 13, 2026
+
+### Decision
+
+Give each downstream request an independent two-second response timeout and execute both concurrently. Do not retry in this implementation.
+
+### Rationale
+
+Retries can improve transient-failure recovery for safe reads, but they complicate the latency budget and amplify load during outages. The three-day submission demonstrates bounded latency and graceful partial results; production retry, jitter, and circuit-breaking policy is documented as future work.
+
+## ADR-010: Deduplication and ordering
+
+- **Status:** Accepted
+- **Date:** July 13, 2026
+
+### Decision
+
+Treat `(sourceSystem, sourceDocumentId)` as document identity. Deduplicate only repeated records from the same source; never collapse records across Sales and Service because their identifiers and ownership domains differ. When a source repeats an identity, prefer the newest `createdAt`, then the lexicographically smallest title for a deterministic tie. Sort the final list by `createdAt` descending, then `sourceSystem`, then `id` ascending.
+
+### Consequences
+
+Response order does not depend on which parallel call completes first, and potentially distinct cross-system records remain visible.
+
+## ADR-011: Required synchronous audit write
+
+- **Status:** Accepted
+- **Date:** July 13, 2026
+
+### Decision
+
+Persist the completed search audit synchronously before returning the response. If the audit record cannot be stored, return a server error rather than claiming the request completed according to the persistent-backend contract.
+
+### Consequences
+
+Database availability participates in request availability. In production, a durable asynchronous audit pipeline could decouple this concern, but that infrastructure is outside the assessment scope.

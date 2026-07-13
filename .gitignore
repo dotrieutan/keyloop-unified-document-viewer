@@ -1,0 +1,31 @@
+# Operating system and editor files
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs and temporary output
+*.log
+tmp/
+temp/
+
+# Build, test, and dependency output
+build/
+dist/
+target/
+out/
+coverage/
+node_modules/
+.gradle/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+

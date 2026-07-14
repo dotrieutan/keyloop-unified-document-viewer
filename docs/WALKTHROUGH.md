@@ -7,7 +7,7 @@ For a script that can be read while recording, use [`VIDEO_SPEAKER_NOTES.md`](VI
 ## Before recording
 
 - Use a clean `main` branch and increase terminal/editor font size.
-- Start PostgreSQL and all three services in separate terminals using the README commands.
+- Start PostgreSQL first, then start `mock-sales-system`, `mock-service-system`, and `aggregator-service` in separate terminals using the README commands.
 - Open `docs/SYSTEM_DESIGN.md`, `DocumentAggregationService.kt`, `DocumentSearchAuditIntegrationTest.kt`, and Swagger UI.
 - Run the complete and timeout fixtures once before recording so there are no first-run surprises.
 - Hide notifications, credentials, unrelated browser tabs, and local file paths where possible.

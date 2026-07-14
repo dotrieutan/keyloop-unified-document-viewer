@@ -6,7 +6,21 @@ Keep these notes open on a second screen or beside the recording window. Speak s
 
 ## Before pressing Record
 
-- Start PostgreSQL, Sales, Service, and the aggregator using the README commands.
+- Start PostgreSQL first:
+
+  ```bash
+  podman compose up -d postgres
+  ```
+
+- In three separate terminals, start the two external-system mocks and then the aggregator:
+
+  ```bash
+  ./gradlew :mock-sales-system:bootRun
+  ./gradlew :mock-service-system:bootRun
+  ./gradlew :aggregator-service:bootRun
+  ```
+
+- Verify that Swagger UI opens at `http://localhost:8080/swagger-ui.html` before recording.
 - Open the repository README, `docs/SYSTEM_DESIGN.md`, `DocumentAggregationService.kt`, `DocumentSearchAuditIntegrationTest.kt`, and Swagger UI.
 - In Swagger UI, expand `GET /api/v1/vehicles/{vin}/documents`.
 - Increase editor and terminal text to at least 16-18 points.
@@ -22,6 +36,8 @@ Hello, my name is Do. Thank you for reviewing my technical challenge.
 I selected Scenario D, the Unified Document Viewer. I implemented the backend service layer using Kotlin, Spring Boot, and PostgreSQL.
 
 The business problem is that dealership users currently need to search separate Sales and Service systems for vehicle documents. My solution provides one API where a user supplies a VIN and receives one consolidated, source-attributed document list.
+
+The repository contains the aggregator plus two external-system mocks named `mock-sales-system` and `mock-service-system`. Those names make it clear that they simulate separate source systems rather than adding more business service layers.
 
 The assessment allows the candidate to implement either the backend or frontend. I chose the backend, so Swagger UI and cURL act as the client stub. A custom frontend is intentionally outside the scope of this submission.
 
@@ -45,7 +61,7 @@ If both systems fail, the API returns a 503 problem response. This makes the dif
 
 This is the implemented request flow.
 
-The aggregation API validates the VIN and establishes a correlation ID. It calls the Sales and Service APIs concurrently, with a separate two-second timeout for each request.
+The aggregation API validates the VIN and establishes a correlation ID. It calls the Sales and Service system mocks concurrently, with a separate two-second timeout for each request.
 
 The source-specific responses are converted into one normalized document model. The service then deduplicates and sorts the documents deterministically before persisting the search audit and returning the response.
 

@@ -8,8 +8,6 @@ The Scenario D backend is functionally complete. It concurrently aggregates both
 
 See:
 
-- [Word-for-word video speaker notes](docs/VIDEO_SPEAKER_NOTES.md)
-- [Video walkthrough script](docs/WALKTHROUGH.md)
 - [Three-day delivery plan](docs/PLAN.md)
 - [Requirements and traceability](docs/REQUIREMENTS.md)
 - [System design](docs/SYSTEM_DESIGN.md)
@@ -46,8 +44,7 @@ A dealership user needs one search interface for all documents related to a vehi
     |-- AI_COLLABORATION.md
     |-- DECISIONS.md
     |-- REQUIREMENTS.md
-    |-- SYSTEM_DESIGN.md
-    `-- WALKTHROUGH.md
+    `-- SYSTEM_DESIGN.md
 ```
 
 The aggregator keeps source-specific HTTP models inside separate adapters. The application service only sees normalized document metadata and source outcomes.

@@ -62,7 +62,7 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 - [x] Review the repository for secrets and machine-specific artifacts.
 - [x] Push the repository to GitHub.
 - [x] Rehearse the documented walkthrough and live demonstrations.
-- [ ] Record the 5-10 minute walkthrough.
+- [x] Record the 5-10 minute walkthrough (reported complete by the owner).
 - [x] Verify anonymous access to the public repository and README.
 - [ ] Verify that the final video link is accessible.
 

@@ -2,11 +2,11 @@
 
 ## Last updated
 
-July 14, 2026
+July 15, 2026
 
 ## Current milestone
 
-The code submission is complete, verified, and publicly accessible. The owner-recorded video remains.
+The code submission is complete, verified, and publicly accessible. The owner reports that the walkthrough video has been recorded; hosting and final link verification remain.
 
 ## Current state
 
@@ -32,9 +32,8 @@ The code submission is complete, verified, and publicly accessible. The owner-re
 - Prometheus metrics cover overall outcomes, duration, returned document count, and per-source outcomes.
 - Unit, mock-HTTP contract, correlation, privacy, concurrency, and PostgreSQL 18.4 integration tests are implemented.
 - Day 3 review removed unused abstractions, added explicit audit outcomes, request/downstream latency telemetry, and required-audit-failure coverage.
-- The README, final system design, AI narrative, 7-8 minute walkthrough script, and submission email checklist are complete.
-- Word-for-word speaker notes with on-screen cues are available in `docs/VIDEO_SPEAKER_NOTES.md`.
-- The recording checklist now uses the exact renamed Gradle tasks and includes a Swagger readiness check.
+- The README, final system design, and AI collaboration narrative are complete.
+- The owner reports that the 5-10 minute walkthrough has been recorded.
 - Mock modules use the symmetric names `mock-sales-system` and `mock-service-system`.
 - A fresh clone with an empty Gradle dependency cache completed all 28 tasks and all 15 expected tests.
 - The public repository is `https://github.com/dotrieutan/keyloop-unified-document-viewer`; anonymous HTTP access, `main`, and the published README were verified.
@@ -49,11 +48,11 @@ The code submission is complete, verified, and publicly accessible. The owner-re
 
 ## Decisions still required
 
-No functional architecture decision remains. The owner must choose the video host and record the walkthrough.
+No functional architecture decision remains. The owner must choose the video host and verify the uploaded recording is publicly accessible.
 
 ## Exact next action
 
-Record the walkthrough using `docs/WALKTHROUGH.md`, upload it, verify the video link in an incognito browser, and replace `<VIDEO_URL>` in the submission email template.
+Upload the recorded walkthrough, verify its link in an incognito browser, and reply to Keyloop with the public repository and video URLs.
 
 ## Verification status
 
@@ -71,7 +70,7 @@ Record the walkthrough using `docs/WALKTHROUGH.md`, upload it, verify the video 
 
 ## Known risks
 
-- The walkthrough is rehearsed but cannot be recorded or hosted without the owner.
+- The recorded walkthrough and its public link have not been independently reviewed or verified in this workspace.
 - Testcontainers requires a Docker-compatible runtime; Podman was verified from a fresh clone.
 
 ## Resume prompt for another AI

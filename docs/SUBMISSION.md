@@ -4,9 +4,9 @@
 
 - [ ] The GitHub repository opens in a logged-out browser window.
 - [ ] The default branch is `main` and the README renders correctly.
-- [ ] No secrets, IDE files, build outputs, or local databases are tracked.
-- [ ] `./gradlew test ktlintCheck` passes from a fresh clone.
-- [ ] Swagger UI, complete results, partial timeout results, and audit persistence have been demonstrated.
+- [x] No secrets, IDE files, build outputs, or local databases are tracked.
+- [x] `./gradlew test ktlintCheck` passes from a fresh clone.
+- [x] Swagger UI, complete results, partial timeout results, and audit persistence have been demonstrated.
 
 ## Video checks
 

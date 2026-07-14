@@ -2,11 +2,11 @@
 
 ## Last updated
 
-July 13, 2026
+July 14, 2026
 
 ## Current milestone
 
-Day 2 behavior and verification are complete; Day 3 submission polish is next.
+The local submission is complete and verified. GitHub publication and the owner-recorded video remain.
 
 ## Current state
 
@@ -31,6 +31,9 @@ Day 2 behavior and verification are complete; Day 3 submission polish is next.
 - Every completed downstream search synchronously inserts a privacy-safe audit row using an HMAC-SHA256 VIN fingerprint.
 - Prometheus metrics cover overall outcomes, duration, returned document count, and per-source outcomes.
 - Unit, mock-HTTP contract, correlation, privacy, concurrency, and PostgreSQL 18.4 integration tests are implemented.
+- Day 3 review removed unused abstractions, added explicit audit outcomes, request/downstream latency telemetry, and required-audit-failure coverage.
+- The README, final system design, AI narrative, 7-8 minute walkthrough script, and submission email checklist are complete.
+- A fresh clone with an empty Gradle dependency cache completed all 28 tasks and all 15 expected tests.
 
 ## Accepted decisions
 
@@ -42,28 +45,29 @@ Day 2 behavior and verification are complete; Day 3 submission polish is next.
 
 ## Decisions still required
 
-No functional architecture decision remains. Day 3 decisions are limited to presentation polish, repository publication, and the video host/link.
+No functional architecture decision remains. The owner must choose GitHub repository visibility and the video host before external publication.
 
 ## Exact next action
 
-Perform the Day 3 clean-start review: refine code and README clarity, run the final full check from a clean local state, rehearse the documented success and timeout demonstrations, then prepare GitHub publication and the 5-10 minute walkthrough.
+Choose public or private GitHub visibility, publish and verify the repository link, then record the walkthrough using `docs/WALKTHROUGH.md` and verify the video link in an incognito browser.
 
 ## Verification status
 
 - Documentation presence and internal file references: checked on July 13, 2026.
 - Git repository: initialized on the `main` branch; use `git log -1 --oneline` and `git status --short` to identify the latest checkpoint and any pending work.
-- Build and formatting: `./gradlew test ktlintCheck --no-daemon --console plain` passed after the persistence and coroutine-test-discovery corrections.
-- Tests: 14 tests cover VIN validation, correlation IDs, both downstream schema adapters, invalid responses, concurrency, aggregation policies, deduplication, audit privacy, and real PostgreSQL persistence.
+- Build and formatting: a fresh clone with a new Gradle home ran `./gradlew test ktlintCheck --no-daemon --console plain`; all 28 tasks executed successfully in 1 minute 43 seconds.
+- Tests: 15 tests cover VIN validation, correlation IDs, both downstream schema adapters, invalid responses, concurrency, aggregation policies, deduplication, required audit failure, audit privacy, and real PostgreSQL persistence. Generated JUnit XML confirmed the expected count.
 - Runtime: all three services started successfully. Fixture `...000001` returned `200 COMPLETE` with four ordered documents in 0.27 seconds; `...000003` returned `200 PARTIAL` with a Service `TIMEOUT` in 2.10 seconds; `...000005` returned an RFC 9457-style `503`; malformed VIN returned `400`.
 - Persistence: PostgreSQL rows were queried directly and contained COMPLETE, PARTIAL, FAILED, EMPTY, TIMEOUT, UNAVAILABLE, and INVALID_RESPONSE outcomes with 64-character VIN fingerprints.
 - Observability: the live Prometheus endpoint exposed request counts/durations/result distributions and per-source outcome counters; a supplied correlation UUID was echoed in both header and response body.
+- Fresh-clone rehearsal: COMPLETE returned four documents in 0.21 seconds, Service timeout returned PARTIAL in 2.10 seconds, total failure returned 503, invalid VIN returned 400, Flyway initialized an empty database, and Swagger redirected correctly.
+- Repository hygiene: tracked-file review, ignored-output review, whitespace checks, and common secret-pattern scans found no submission blockers.
 
 ## Known risks
 
-- The synchronous audit requirement means database failure will fail the request and must be tested and explained.
-- Mock behavior is VIN-fixture-driven; the fixture table is now in the README and should be rehearsed before recording.
-- Testcontainers requires a Docker-compatible runtime; Podman was verified locally.
-- The static OpenAPI contract and generated Swagger contract should receive one final visual comparison during Day 3.
+- GitHub has no remote configured yet; publication visibility must be chosen.
+- The walkthrough is rehearsed but cannot be recorded or hosted without the owner.
+- Testcontainers requires a Docker-compatible runtime; Podman was verified from a fresh clone.
 
 ## Resume prompt for another AI
 

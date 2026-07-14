@@ -53,15 +53,16 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 
 ### Outcomes
 
-- [ ] Refactor unclear code and remove unused dependencies.
-- [ ] Run the complete formatter, static-analysis, and test suite.
-- [ ] Finalize README setup and cURL examples.
-- [ ] Finalize the system-design document and diagrams.
-- [ ] Finalize the AI collaboration narrative.
-- [ ] Verify the documented clean-start workflow.
-- [ ] Review the repository for secrets and machine-specific artifacts.
+- [x] Refactor unclear code and remove unused dependencies.
+- [x] Run the complete formatter, static-analysis, and test suite.
+- [x] Finalize README setup and cURL examples.
+- [x] Finalize the system-design document and diagrams.
+- [x] Finalize the AI collaboration narrative.
+- [x] Verify the documented clean-start workflow.
+- [x] Review the repository for secrets and machine-specific artifacts.
 - [ ] Push the repository to GitHub.
-- [ ] Rehearse and record the 5-10 minute walkthrough.
+- [x] Rehearse the documented walkthrough and live demonstrations.
+- [ ] Record the 5-10 minute walkthrough.
 - [ ] Verify that repository and video links are accessible.
 
 ### Day 3 exit criteria

@@ -130,6 +130,11 @@ This document records how AI is directed, challenged, verified, and corrected th
 | 2026-07-13 | Live acceptance paths | cURL against seven deterministic fixtures | Expected 200/400/503 and COMPLETE/PARTIAL outcomes verified |
 | 2026-07-13 | Live persistence and telemetry | Direct PostgreSQL query plus Prometheus scrape | Expected privacy-safe rows and tagged metrics verified |
 | 2026-07-13 | Final automated check | `./gradlew test ktlintCheck --no-daemon --console plain`; JUnit XML count reviewed | 14 tests and all style checks complete |
+| 2026-07-14 | Day 3 behavior refinement | Focused aggregator tests after telemetry, enum, and audit-failure changes | 15 tests complete |
+| 2026-07-14 | Fresh dependency/build workflow | Fresh local clone and empty Gradle home; `./gradlew test ktlintCheck --no-daemon --console plain` | All 28 tasks executed successfully in 1m43s |
+| 2026-07-14 | Fresh test discovery | Counted generated JUnit XML cases | All 15 expected tests present |
+| 2026-07-14 | Fresh runtime rehearsal | New PostgreSQL volume, Flyway migration, all three applications, cURL, direct SQL, metrics, and Swagger | COMPLETE 0.21s, PARTIAL timeout 2.10s, 503 and 400 verified |
+| 2026-07-14 | Repository hygiene | Tracked-file inspection, ignore rules, whitespace checks, and common secret-pattern scan | No blockers found |
 
 ## AI mistakes and corrections
 

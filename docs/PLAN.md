@@ -60,10 +60,11 @@ Deliver an interview-ready backend implementation of Keyloop Scenario D between 
 - [x] Finalize the AI collaboration narrative.
 - [x] Verify the documented clean-start workflow.
 - [x] Review the repository for secrets and machine-specific artifacts.
-- [ ] Push the repository to GitHub.
+- [x] Push the repository to GitHub.
 - [x] Rehearse the documented walkthrough and live demonstrations.
 - [ ] Record the 5-10 minute walkthrough.
-- [ ] Verify that repository and video links are accessible.
+- [x] Verify anonymous access to the public repository and README.
+- [ ] Verify that the final video link is accessible.
 
 ### Day 3 exit criteria
 

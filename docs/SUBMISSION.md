@@ -2,8 +2,8 @@
 
 ## Repository checks
 
-- [ ] The GitHub repository opens in a logged-out browser window.
-- [ ] The default branch is `main` and the README renders correctly.
+- [x] The GitHub repository opens without authentication: `https://github.com/dotrieutan/keyloop-unified-document-viewer`.
+- [x] The default branch is `main` and the published README is anonymously readable.
 - [x] No secrets, IDE files, build outputs, or local databases are tracked.
 - [x] `./gradlew test ktlintCheck` passes from a fresh clone.
 - [x] Swagger UI, complete results, partial timeout results, and audit persistence have been demonstrated.
@@ -23,7 +23,7 @@ Subject: Keyloop Senior Software Engineer Coding Challenge - Do
 >
 > Thank you for the opportunity. I have completed Scenario D, the Unified Document Viewer, with a Kotlin and Spring Boot backend implementation.
 >
-> GitHub repository: `<REPOSITORY_URL>`
+> GitHub repository: `https://github.com/dotrieutan/keyloop-unified-document-viewer`
 >
 > Video walkthrough: `<VIDEO_URL>`
 >

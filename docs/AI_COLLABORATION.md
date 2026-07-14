@@ -135,6 +135,7 @@ This document records how AI is directed, challenged, verified, and corrected th
 | 2026-07-14 | Fresh test discovery | Counted generated JUnit XML cases | All 15 expected tests present |
 | 2026-07-14 | Fresh runtime rehearsal | New PostgreSQL volume, Flyway migration, all three applications, cURL, direct SQL, metrics, and Swagger | COMPLETE 0.21s, PARTIAL timeout 2.10s, 503 and 400 verified |
 | 2026-07-14 | Repository hygiene | Tracked-file inspection, ignore rules, whitespace checks, and common secret-pattern scan | No blockers found |
+| 2026-07-14 | GitHub publication | Created public repository, pushed `main`, queried visibility/default branch, and made anonymous HTTP/raw README requests | Public link verified |
 
 ## AI mistakes and corrections
 

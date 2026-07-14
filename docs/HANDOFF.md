@@ -6,7 +6,7 @@ July 14, 2026
 
 ## Current milestone
 
-The local submission is complete and verified. GitHub publication and the owner-recorded video remain.
+The code submission is complete, verified, and publicly accessible. The owner-recorded video remains.
 
 ## Current state
 
@@ -34,6 +34,7 @@ The local submission is complete and verified. GitHub publication and the owner-
 - Day 3 review removed unused abstractions, added explicit audit outcomes, request/downstream latency telemetry, and required-audit-failure coverage.
 - The README, final system design, AI narrative, 7-8 minute walkthrough script, and submission email checklist are complete.
 - A fresh clone with an empty Gradle dependency cache completed all 28 tasks and all 15 expected tests.
+- The public repository is `https://github.com/dotrieutan/keyloop-unified-document-viewer`; anonymous HTTP access, `main`, and the published README were verified.
 
 ## Accepted decisions
 
@@ -45,11 +46,11 @@ The local submission is complete and verified. GitHub publication and the owner-
 
 ## Decisions still required
 
-No functional architecture decision remains. The owner must choose GitHub repository visibility and the video host before external publication.
+No functional architecture decision remains. The owner must choose the video host and record the walkthrough.
 
 ## Exact next action
 
-Choose public or private GitHub visibility, publish and verify the repository link, then record the walkthrough using `docs/WALKTHROUGH.md` and verify the video link in an incognito browser.
+Record the walkthrough using `docs/WALKTHROUGH.md`, upload it, verify the video link in an incognito browser, and replace `<VIDEO_URL>` in the submission email template.
 
 ## Verification status
 
@@ -62,10 +63,10 @@ Choose public or private GitHub visibility, publish and verify the repository li
 - Observability: the live Prometheus endpoint exposed request counts/durations/result distributions and per-source outcome counters; a supplied correlation UUID was echoed in both header and response body.
 - Fresh-clone rehearsal: COMPLETE returned four documents in 0.21 seconds, Service timeout returned PARTIAL in 2.10 seconds, total failure returned 503, invalid VIN returned 400, Flyway initialized an empty database, and Swagger redirected correctly.
 - Repository hygiene: tracked-file review, ignored-output review, whitespace checks, and common secret-pattern scans found no submission blockers.
+- GitHub publication: `main` was pushed to a PUBLIC repository; GitHub reported the correct default branch and anonymous HTTP and raw README requests returned successfully.
 
 ## Known risks
 
-- GitHub has no remote configured yet; publication visibility must be chosen.
 - The walkthrough is rehearsed but cannot be recorded or hosted without the owner.
 - Testcontainers requires a Docker-compatible runtime; Podman was verified from a fresh clone.
 

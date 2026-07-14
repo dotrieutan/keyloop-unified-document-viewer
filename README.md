@@ -8,6 +8,7 @@ The Scenario D backend is functionally complete. It concurrently aggregates both
 
 See:
 
+- [Word-for-word video speaker notes](docs/VIDEO_SPEAKER_NOTES.md)
 - [Video walkthrough script](docs/WALKTHROUGH.md)
 - [Three-day delivery plan](docs/PLAN.md)
 - [Requirements and traceability](docs/REQUIREMENTS.md)

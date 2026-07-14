@@ -2,6 +2,8 @@
 
 Target length: 7-8 minutes. The goal is to explain decisions and evidence, not read every file.
 
+For a script that can be read while recording, use [`VIDEO_SPEAKER_NOTES.md`](VIDEO_SPEAKER_NOTES.md).
+
 ## Before recording
 
 - Use a clean `main` branch and increase terminal/editor font size.

@@ -99,8 +99,8 @@ podman compose up -d postgres
 podman compose down
 
 # Start each application in its own terminal
-./gradlew :mock-sales-service:bootRun
-./gradlew :mock-service-service:bootRun
+./gradlew :mock-sales-system:bootRun
+./gradlew :mock-service-system:bootRun
 ./gradlew :aggregator-service:bootRun
 ```
 

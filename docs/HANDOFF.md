@@ -34,6 +34,7 @@ The code submission is complete, verified, and publicly accessible. The owner-re
 - Day 3 review removed unused abstractions, added explicit audit outcomes, request/downstream latency telemetry, and required-audit-failure coverage.
 - The README, final system design, AI narrative, 7-8 minute walkthrough script, and submission email checklist are complete.
 - Word-for-word speaker notes with on-screen cues are available in `docs/VIDEO_SPEAKER_NOTES.md`.
+- Mock modules use the symmetric names `mock-sales-system` and `mock-service-system`.
 - A fresh clone with an empty Gradle dependency cache completed all 28 tasks and all 15 expected tests.
 - The public repository is `https://github.com/dotrieutan/keyloop-unified-document-viewer`; anonymous HTTP access, `main`, and the published README were verified.
 
@@ -65,6 +66,7 @@ Record the walkthrough using `docs/WALKTHROUGH.md`, upload it, verify the video 
 - Fresh-clone rehearsal: COMPLETE returned four documents in 0.21 seconds, Service timeout returned PARTIAL in 2.10 seconds, total failure returned 503, invalid VIN returned 400, Flyway initialized an empty database, and Swagger redirected correctly.
 - Repository hygiene: tracked-file review, ignored-output review, whitespace checks, and common secret-pattern scans found no submission blockers.
 - GitHub publication: `main` was pushed to a PUBLIC repository; GitHub reported the correct default branch and anonymous HTTP and raw README requests returned successfully.
+- Module naming: `mock-sales-system` and `mock-service-system` both passed the full build, started through their renamed Gradle tasks, and reported health `UP`.
 
 ## Known risks
 

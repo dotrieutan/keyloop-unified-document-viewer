@@ -198,7 +198,7 @@ The combined result is sorted by creation time descending, then source system an
 - `api`: public controller, RFC 9457 error translation, response models, and correlation filter.
 - `service`: concurrent orchestration, complete/partial/failed policy, metrics, normalization, deduplication, and ordering.
 - `client`: one adapter per source-specific HTTP contract and bounded failure classification.
-- `audit`: the Spring Data JDBC aggregate, repository, HMAC fingerprinting, and required insert boundary.
+- `audit`: the Spring Data JDBC aggregate, explicit insert writer, HMAC fingerprinting, and required persistence boundary.
 - `domain`: VIN and source-neutral document models plus the source-client port.
 
 The mock services deliberately keep independent DTOs and fixture behavior. This makes schema translation visible rather than creating an unrealistic shared model between separately owned systems. PostgreSQL is orchestrated through `compose.yml`; Testcontainers starts an isolated PostgreSQL 18.4 database for the persistence integration test.

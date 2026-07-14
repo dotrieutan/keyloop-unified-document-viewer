@@ -38,8 +38,8 @@ A dealership user needs one search interface for all documents related to a vehi
 |-- AGENTS.md
 |-- README.md
 |-- aggregator-service
-|-- mock-sales-service
-|-- mock-service-service
+|-- mock-sales-system
+|-- mock-service-system
 |-- compose.yml
 `-- docs
     |-- api
@@ -107,8 +107,8 @@ podman compose up -d postgres
 Then start each service in a separate terminal:
 
 ```bash
-./gradlew :mock-sales-service:bootRun
-./gradlew :mock-service-service:bootRun
+./gradlew :mock-sales-system:bootRun
+./gradlew :mock-service-system:bootRun
 ./gradlew :aggregator-service:bootRun
 ```
 

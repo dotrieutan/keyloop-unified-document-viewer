@@ -6,7 +6,6 @@ rootProject.name = "keyloop-unified-document-viewer"
 
 include(
     "aggregator-service",
-    "mock-sales-service",
-    "mock-service-service",
+    "mock-sales-system",
+    "mock-service-system",
 )
-

@@ -109,6 +109,8 @@ This document records how AI is directed, challenged, verified, and corrected th
 
 **Verification:** The complete multi-module check, fresh-clone workflow, live demonstrations, repository hygiene scan, and public-link checks are recorded in the ledger and handoff once executed.
 
+**Naming refinement:** The owner questioned the ambiguous repeated word in the Service mock module. AI recommended symmetric system-oriented names, and the owner accepted `mock-sales-system` and `mock-service-system`. All Gradle, Spring application, README, and contributor-command references were updated together.
+
 ## Verification ledger
 
 | Date | Artifact or behavior | Verification | Result |
@@ -136,6 +138,7 @@ This document records how AI is directed, challenged, verified, and corrected th
 | 2026-07-14 | Fresh runtime rehearsal | New PostgreSQL volume, Flyway migration, all three applications, cURL, direct SQL, metrics, and Swagger | COMPLETE 0.21s, PARTIAL timeout 2.10s, 503 and 400 verified |
 | 2026-07-14 | Repository hygiene | Tracked-file inspection, ignore rules, whitespace checks, and common secret-pattern scan | No blockers found |
 | 2026-07-14 | GitHub publication | Created public repository, pushed `main`, queried visibility/default branch, and made anonymous HTTP/raw README requests | Public link verified |
+| 2026-07-14 | Mock module rename | Full Gradle check, renamed boot tasks, and both health endpoints | `mock-sales-system` and `mock-service-system` verified |
 
 ## AI mistakes and corrections
 

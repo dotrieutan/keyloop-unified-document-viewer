@@ -6,6 +6,7 @@ import com.keyloop.documentviewer.api.SearchStatus
 import com.keyloop.documentviewer.api.SourceSummary
 import com.keyloop.documentviewer.api.SourceWarning
 import com.keyloop.documentviewer.api.WarningCode
+import com.keyloop.documentviewer.audit.AuditOutcome
 import com.keyloop.documentviewer.audit.SearchAuditRecord
 import com.keyloop.documentviewer.audit.SearchAuditWriter
 import com.keyloop.documentviewer.domain.DocumentMetadata
@@ -23,7 +24,9 @@ import kotlinx.coroutines.coroutineScope
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Clock
+import java.time.Duration
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @Service
 class DocumentAggregationService(
@@ -47,11 +50,12 @@ class DocumentAggregationService(
         val usableResults = sourceResults.filter { it.isUsable }
         val documents = normalize(usableResults.flatMap { it.documents })
         val completedAt = clock.instant()
+        val duration = Duration.between(requestedAt, completedAt).takeUnless { it.isNegative } ?: Duration.ZERO
         val outcome =
             when (usableResults.size) {
-                SourceSystem.entries.size -> "COMPLETE"
-                0 -> "FAILED"
-                else -> "PARTIAL"
+                SourceSystem.entries.size -> AuditOutcome.COMPLETE
+                0 -> AuditOutcome.FAILED
+                else -> AuditOutcome.PARTIAL
             }
 
         auditWriter.write(
@@ -65,13 +69,13 @@ class DocumentAggregationService(
                 resultCount = documents.size,
             ),
         )
-        meterRegistry.counter("document.search.requests", "outcome", outcome).increment()
+        meterRegistry.counter("document.search.requests", "outcome", outcome.name).increment()
         Timer
             .builder("document.search.duration")
-            .tag("outcome", outcome)
+            .tag("outcome", outcome.name)
             .register(meterRegistry)
-            .record(java.time.Duration.between(requestedAt, completedAt))
-        meterRegistry.summary("document.search.result.count", "outcome", outcome).record(documents.size.toDouble())
+            .record(duration)
+        meterRegistry.summary("document.search.result.count", "outcome", outcome.name).record(documents.size.toDouble())
         sourceResults.forEach { source ->
             meterRegistry
                 .counter(
@@ -83,9 +87,11 @@ class DocumentAggregationService(
                 ).increment()
         }
         logger.info(
-            "event=document_search_completed correlationId={} outcome={} resultCount={} salesOutcome={} serviceOutcome={}",
+            "event=document_search_completed correlationId={} outcome={} durationMs={} resultCount={} " +
+                "salesOutcome={} serviceOutcome={}",
             correlationId,
             outcome,
+            duration.toMillis(),
             documents.size,
             sourceResults.first { it.sourceSystem == SourceSystem.SALES }.status,
             sourceResults.first { it.sourceSystem == SourceSystem.SERVICE }.status,
@@ -98,7 +104,7 @@ class DocumentAggregationService(
         return DocumentSearchResponse(
             correlationId = correlationId,
             vin = vin.value,
-            status = if (outcome == "COMPLETE") SearchStatus.COMPLETE else SearchStatus.PARTIAL,
+            status = if (outcome == AuditOutcome.COMPLETE) SearchStatus.COMPLETE else SearchStatus.PARTIAL,
             retrievedAt = completedAt,
             documents = documents,
             sources =
@@ -116,7 +122,17 @@ class DocumentAggregationService(
         coroutineScope {
             clients
                 .map { client ->
-                    async(Dispatchers.IO) { client.fetch(vin, correlationId) }
+                    async(Dispatchers.IO) {
+                        val startedAt = System.nanoTime()
+                        val result = client.fetch(vin, correlationId)
+                        Timer
+                            .builder("document.downstream.duration")
+                            .tag("source", result.sourceSystem.name)
+                            .tag("outcome", result.status.name)
+                            .register(meterRegistry)
+                            .record(System.nanoTime() - startedAt, TimeUnit.NANOSECONDS)
+                        result
+                    }
                 }.awaitAll()
         }
 
@@ -132,16 +148,18 @@ class DocumentAggregationService(
                     .thenBy { it.id },
             )
 
-    private fun warningFor(result: SourceFetchResult): SourceWarning =
-        SourceWarning(
+    private fun warningFor(result: SourceFetchResult): SourceWarning {
+        val (code, message) =
+            when (result.status) {
+                SourceStatus.TIMEOUT -> WarningCode.TIMEOUT to "The source did not respond before its deadline"
+                SourceStatus.UNAVAILABLE -> WarningCode.UNAVAILABLE to "The source is temporarily unavailable"
+                SourceStatus.INVALID_RESPONSE -> WarningCode.INVALID_RESPONSE to "The source returned an unusable response"
+                else -> error("Usable source results do not produce warnings")
+            }
+        return SourceWarning(
             sourceSystem = result.sourceSystem,
-            code = WarningCode.valueOf(result.status.name),
-            message =
-                when (result.status) {
-                    SourceStatus.TIMEOUT -> "The source did not respond before its deadline"
-                    SourceStatus.UNAVAILABLE -> "The source is temporarily unavailable"
-                    SourceStatus.INVALID_RESPONSE -> "The source returned an unusable response"
-                    else -> error("Usable source results do not produce warnings")
-                },
+            code = code,
+            message = message,
         )
+    }
 }

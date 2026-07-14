@@ -14,7 +14,7 @@ import java.util.UUID
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-interface SearchAuditWriter {
+fun interface SearchAuditWriter {
     fun write(record: SearchAuditRecord)
 }
 
@@ -23,10 +23,16 @@ data class SearchAuditRecord(
     val vin: Vin,
     val requestedAt: Instant,
     val completedAt: Instant,
-    val outcome: String,
+    val outcome: AuditOutcome,
     val sourceOutcomes: Map<SourceSystem, SourceStatus>,
     val resultCount: Int,
 )
+
+enum class AuditOutcome {
+    COMPLETE,
+    PARTIAL,
+    FAILED,
+}
 
 @Component
 class AuditWriter(
@@ -43,7 +49,7 @@ class AuditWriter(
                 vinFingerprint = fingerprint(record.vin),
                 requestedAt = record.requestedAt,
                 completedAt = record.completedAt,
-                outcome = record.outcome,
+                outcome = record.outcome.name,
                 salesOutcome = requireNotNull(record.sourceOutcomes[SourceSystem.SALES]).name,
                 serviceOutcome = requireNotNull(record.sourceOutcomes[SourceSystem.SERVICE]).name,
                 resultCount = record.resultCount,

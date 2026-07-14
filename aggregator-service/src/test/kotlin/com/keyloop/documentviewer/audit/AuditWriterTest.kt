@@ -28,7 +28,7 @@ class AuditWriterTest {
                 vin = vin,
                 requestedAt = requestedAt,
                 completedAt = requestedAt.plusMillis(125),
-                outcome = "PARTIAL",
+                outcome = AuditOutcome.PARTIAL,
                 sourceOutcomes =
                     mapOf(
                         SourceSystem.SALES to SourceStatus.SUCCESS,

@@ -95,6 +95,20 @@ This document records how AI is directed, challenged, verified, and corrected th
 - Reviewing the generated JUnit XML showed that two expression-bodied coroutine tests compiled but were not discovered because Kotlin inferred a non-`Unit` return type. Explicit `Unit` return types restored discovery, and the final report was checked for all 14 expected test cases.
 - Live HTTP probes verified complete, partial, timeout, empty, total-failure, invalid-downstream, and invalid-VIN behavior. Direct SQL verified persisted outcomes and 64-character HMAC fingerprints; Prometheus output verified request and source metrics.
 
+### July 14, 2026 - Submission review and presentation preparation
+
+**Direction given to AI:** Proceed with Day 3 submission-quality work, including reviewer-oriented code cleanup, clean-start verification, repository preparation, and the video walkthrough.
+
+**AI contribution:**
+
+- Reviewed the production and test code against the accepted decisions and removed an unused validation dependency and repository abstraction.
+- Replaced stringly typed audit outcomes and warning conversion with explicit enums and mappings.
+- Added downstream latency metrics, request duration logging, explicit correlation on unexpected-error logs, and a test proving required audit failure aborts the request.
+- Reconciled the design document with the implementation, clearly separating implemented correlation from future distributed tracing.
+- Prepared a timed 7-8 minute walkthrough and a final submission/email checklist.
+
+**Verification:** The complete multi-module check, fresh-clone workflow, live demonstrations, repository hygiene scan, and public-link checks are recorded in the ledger and handoff once executed.
+
 ## Verification ledger
 
 | Date | Artifact or behavior | Verification | Result |
@@ -134,6 +148,15 @@ AI added Flyway's PostgreSQL database module based on older Spring Boot conventi
 ### Incorrect Spring Data JDBC save semantics for an assigned ID
 
 AI initially called `CrudRepository.save` with a preassigned UUID. Spring Data JDBC interpreted the non-null identifier as an existing row and performed an update, so the method returned without inserting anything. A real PostgreSQL integration test—not compilation or a repository mock—caught the missing row. The audit writer now uses `JdbcAggregateTemplate.insert`, making new-record intent explicit and avoiding ambiguous entity-state detection.
+
+## Final collaboration summary
+
+1. **Delegated to AI:** assessment extraction, scenario comparison, architecture alternatives, scaffolding, implementation assistance, test generation, documentation, and reviewer-style audits.
+2. **Human-owned decisions:** Scenario D selection, backend-only scope, Kotlin/Spring Boot stack, accepted reliability semantics, audit interpretation, final review, and submission responsibility.
+3. **Changed AI suggestions:** incorrect dependency assumptions, the PostgreSQL 18 mount, Flyway activation, repository save semantics, and initially undiscovered coroutine tests were all corrected through evidence.
+4. **Verification approach:** official documentation for unstable version facts, compiler and formatter checks, unit and mock-HTTP tests, Testcontainers PostgreSQL, container logs, direct SQL, live cURL requests, Prometheus output, and explicit JUnit test-count inspection.
+5. **Most valuable defect found:** the real database integration test showed that a seemingly successful repository call did not insert its audit row, demonstrating why mocked repository tests alone were insufficient.
+6. **Production evolution:** add identity and tenancy controls, secrets management, OpenTelemetry, measured resilience policies, response limits, and a durable audit pipeline where availability requirements justify it.
 
 ## Final narrative prompts
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented and verified on July 13, 2026. Day 3 remains for submission polish and video rehearsal.
+Implemented and reviewed against the code on July 14, 2026.
 
 ## 1. Problem statement
 
@@ -41,7 +41,7 @@ The following assumptions are accepted for the implementation:
 6. VIN input is normalized to uppercase and validated at the API boundary.
 7. Downstream calls have separate deadlines so a slow system cannot consume the entire request budget.
 
-## 4. Proposed architecture
+## 4. Implemented architecture
 
 ```mermaid
 flowchart LR
@@ -65,7 +65,7 @@ flowchart LR
 | Aggregator | Start both dependency calls concurrently and combine successful outcomes according to the partial-failure policy. |
 | Normalizer | Convert dependency-specific document formats into the public document model. |
 | Deduplicator/sorter | Apply the documented identity rule and stable ordering. |
-| Search audit repository | Persist a minimal record of the search outcome without document content. |
+| Search audit writer | Insert a minimal record of the search outcome without document content. |
 | Mock APIs | Provide deterministic success, empty, slow, malformed, and failure responses for demonstrations and tests. |
 
 ## 6. Request data flow
@@ -140,14 +140,14 @@ The raw VIN, document metadata, document URLs, and downstream error bodies are n
 ### Metrics
 
 - Request count and latency by overall outcome.
-- Per-dependency request latency, timeout count, and error count.
+- Per-dependency request latency and outcome counts.
 - Partial-response and total-failure counts.
 - Returned document count distribution.
 
 ### Tracing
 
-- One request span with child spans for the Sales and Service calls and audit persistence.
-- Propagate standard trace context in a production design; use correlation IDs as the minimum implementation.
+- The submission implements propagated correlation IDs rather than distributed tracing.
+- A production implementation would add OpenTelemetry request, Sales, Service, and audit spans and propagate standard trace context.
 
 ## 11. Security and privacy considerations
 
@@ -183,7 +183,7 @@ The raw VIN, document metadata, document URLs, and downstream error bodies are n
 
 ## 14. GenAI use in the design phase
 
-AI assisted with extracting the assessment, comparing the four scenarios, identifying Scenario D's reliability and persistence ambiguities, proposing a risk-adjusted three-day scope, and creating continuity documentation. The owner must review and accept the assumptions and technology decision before implementation.
+AI assisted with extracting the assessment, comparing the four scenarios, identifying Scenario D's reliability and persistence ambiguities, proposing a risk-adjusted three-day scope, implementing the accepted design, and creating continuity documentation. The owner retained responsibility for accepting the scenario, stack, scope, and tradeoffs and for the submitted result.
 
 Detailed prompts, verification, corrections, and ownership notes are maintained in `docs/AI_COLLABORATION.md`.
 
@@ -202,3 +202,13 @@ The combined result is sorted by creation time descending, then source system an
 - `domain`: VIN and source-neutral document models plus the source-client port.
 
 The mock services deliberately keep independent DTOs and fixture behavior. This makes schema translation visible rather than creating an unrealistic shared model between separately owned systems. PostgreSQL is orchestrated through `compose.yml`; Testcontainers starts an isolated PostgreSQL 18.4 database for the persistence integration test.
+
+## 17. Production evolution
+
+The assessment implementation deliberately stops before production infrastructure. The next production steps would be:
+
+1. Add identity, dealership-scoped authorization, secrets management, and audit retention controls.
+2. Add OpenTelemetry traces and service-level objectives around latency, partial responses, and dependency health.
+3. Define a retry budget, jitter, circuit breaking, and bulkheads using measured dependency behavior.
+4. Decouple required audit delivery through a durable event pipeline if database availability should not affect searches.
+5. Add response limits or pagination and consider short-lived metadata caching only after measuring cardinality and freshness needs.

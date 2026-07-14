@@ -50,7 +50,11 @@ class ApiExceptionHandler {
         exception: Exception,
         request: HttpServletRequest,
     ): ProblemDetail {
-        logger.error("event=document_search_unexpected_error", exception)
+        logger.error(
+            "event=document_search_unexpected_error correlationId={}",
+            CorrelationIdFilter.from(request),
+            exception,
+        )
         return problem(
             status = HttpStatus.INTERNAL_SERVER_ERROR,
             type = "https://keyloop.example/problems/internal-error",

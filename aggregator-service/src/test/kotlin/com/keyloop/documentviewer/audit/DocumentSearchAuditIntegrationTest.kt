@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.junit.jupiter.Container
@@ -22,7 +23,7 @@ class DocumentSearchAuditIntegrationTest {
     private lateinit var writer: SearchAuditWriter
 
     @Autowired
-    private lateinit var repository: DocumentSearchAuditRepository
+    private lateinit var jdbcTemplate: JdbcTemplate
 
     @Test
     fun `Flyway schema accepts and reloads a privacy-safe audit record`() {
@@ -36,7 +37,7 @@ class DocumentSearchAuditIntegrationTest {
                 vin = vin,
                 requestedAt = now,
                 completedAt = now.plusMillis(50),
-                outcome = "COMPLETE",
+                outcome = AuditOutcome.COMPLETE,
                 sourceOutcomes =
                     mapOf(
                         SourceSystem.SALES to SourceStatus.SUCCESS,
@@ -46,10 +47,18 @@ class DocumentSearchAuditIntegrationTest {
             ),
         )
 
-        val stored = repository.findAll().single { it.correlationId == correlationId }
-        assertThat(stored.vinFingerprint).hasSize(64).doesNotContain(vin.value)
-        assertThat(stored.outcome).isEqualTo("COMPLETE")
-        assertThat(stored.serviceOutcome).isEqualTo("EMPTY")
+        val stored =
+            jdbcTemplate.queryForMap(
+                """
+                SELECT vin_fingerprint, outcome, service_outcome
+                FROM document_search_audit
+                WHERE correlation_id = ?
+                """.trimIndent(),
+                correlationId,
+            )
+        assertThat(stored["vin_fingerprint"]).asString().hasSize(64).doesNotContain(vin.value)
+        assertThat(stored["outcome"]).isEqualTo("COMPLETE")
+        assertThat(stored["service_outcome"]).isEqualTo("EMPTY")
     }
 
     companion object {

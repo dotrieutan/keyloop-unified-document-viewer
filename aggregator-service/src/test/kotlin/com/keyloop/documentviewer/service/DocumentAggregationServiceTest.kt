@@ -3,6 +3,7 @@ package com.keyloop.documentviewer.service
 import com.keyloop.documentviewer.api.AllSourcesUnavailableException
 import com.keyloop.documentviewer.api.SearchStatus
 import com.keyloop.documentviewer.api.WarningCode
+import com.keyloop.documentviewer.audit.AuditOutcome
 import com.keyloop.documentviewer.audit.SearchAuditRecord
 import com.keyloop.documentviewer.audit.SearchAuditWriter
 import com.keyloop.documentviewer.domain.DocumentMetadata
@@ -53,7 +54,7 @@ class DocumentAggregationServiceTest {
             assertThat(response.documents).extracting<String> { it.title }.containsExactly("Service", "Alpha")
             assertThat(response.sources).allMatch { it.status == SourceStatus.SUCCESS }
             assertThat(response.warnings).isEmpty()
-            assertThat(audit.records.single().outcome).isEqualTo("COMPLETE")
+            assertThat(audit.records.single().outcome).isEqualTo(AuditOutcome.COMPLETE)
             assertThat(audit.records.single().resultCount).isEqualTo(2)
         }
 
@@ -76,7 +77,7 @@ class DocumentAggregationServiceTest {
             assertThat(response.documents).hasSize(1)
             assertThat(response.warnings.single().code).isEqualTo(WarningCode.TIMEOUT)
             assertThat(response.warnings.single().message).doesNotContain("exception", "localhost")
-            assertThat(audit.records.single().outcome).isEqualTo("PARTIAL")
+            assertThat(audit.records.single().outcome).isEqualTo(AuditOutcome.PARTIAL)
         }
 
     @Test
@@ -96,7 +97,7 @@ class DocumentAggregationServiceTest {
         assertThat(exception.sources)
             .extracting<SourceStatus> { it.status }
             .containsExactly(SourceStatus.UNAVAILABLE, SourceStatus.TIMEOUT)
-        assertThat(audit.records.single().outcome).isEqualTo("FAILED")
+        assertThat(audit.records.single().outcome).isEqualTo(AuditOutcome.FAILED)
         assertThat(audit.records.single().resultCount).isZero()
     }
 
@@ -117,6 +118,21 @@ class DocumentAggregationServiceTest {
             assertThat(response.status).isEqualTo(SearchStatus.COMPLETE)
             assertThat(response.documents).isEmpty()
         }
+
+    @Test
+    fun `fails the request when required audit persistence fails`() {
+        val service =
+            service(
+                SourceSystem.entries.map { source ->
+                    DocumentSourceClient { _, _ -> SourceFetchResult(source, SourceStatus.EMPTY) }
+                },
+                SearchAuditWriter { throw IllegalStateException("database unavailable") },
+            )
+
+        val exception = assertThrows<IllegalStateException> { runBlocking { service.search(vin, correlationId) } }
+
+        assertThat(exception).hasMessage("database unavailable")
+    }
 
     private fun service(
         clients: List<DocumentSourceClient>,

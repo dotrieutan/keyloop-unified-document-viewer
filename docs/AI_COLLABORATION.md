@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document records how AI is directed, challenged, verified, and corrected throughout the assessment. It will be condensed into the final README and video narrative.
+This document records how AI was directed, challenged, verified, and corrected throughout the assessment.
 
 ## Collaboration principles
 
@@ -34,22 +34,6 @@ This document records how AI is directed, challenged, verified, and corrected th
 - Scope was reduced to fit a three-day schedule.
 - Production frontend, authentication, Kubernetes, messaging, and cloud deployment were explicitly excluded.
 
-### July 13, 2026 - Continuity and usage-risk planning
-
-**Direction given to AI:** Establish a workflow that another AI agent can resume if usage becomes unavailable.
-
-**AI contribution:**
-
-- Proposed repository-based durable context through `AGENTS.md`, planning, design, decision, handoff, and collaboration files.
-- Proposed small Git checkpoints and test-backed handoffs.
-- Created the initial documentation structure and a resume prompt.
-
-**Owner verification required:**
-
-- Review all initial assumptions.
-- Confirm the implementation technology based on interview fluency.
-- Review and accept or revise all proposed decisions before scaffolding.
-
 ### July 13, 2026 - Requirement re-analysis and stack selection
 
 **Direction given to AI:** Re-read Scenario D, verify whether a UI must be implemented, and adopt current stable Kotlin and Spring Boot technologies.
@@ -59,14 +43,14 @@ This document records how AI is directed, challenged, verified, and corrected th
 - Re-extracted the exact Scenario D and common implementation wording from the assessment.
 - Distinguished the complete product requirements from the selected backend service-layer implementation.
 - Confirmed that the document explicitly permits the client to be mocked with cURL, a test harness, or OpenAPI.
-- Proposed Swagger UI plus cURL as the client stub so the video remains interactive without a custom frontend.
+- Proposed Swagger UI plus cURL as an interactive client stub without a custom frontend.
 - Verified stable versions from official Kotlin, Spring, Gradle, PostgreSQL, Java, and springdoc project sources.
 
 **Owner decision:** Accepted Kotlin and Spring Boot and requested current versions. The documentation records latest stable compatible versions rather than milestones, release candidates, or snapshots.
 
 **Verification and refinement:**
 
-- The new requirements matrix maps every Scenario D and common backend requirement to planned evidence.
+- The requirements matrix maps every Scenario D and common backend requirement to implementation evidence.
 - Java 25 LTS was chosen instead of the newer non-LTS Java 26 line to provide a defensible production baseline.
 - Spring Boot dependency management will control compatible transitive library versions rather than forcing every library independently.
 
@@ -95,9 +79,9 @@ This document records how AI is directed, challenged, verified, and corrected th
 - Reviewing the generated JUnit XML showed that two expression-bodied coroutine tests compiled but were not discovered because Kotlin inferred a non-`Unit` return type. Explicit `Unit` return types restored discovery, and the final report was checked for all 14 expected test cases.
 - Live HTTP probes verified complete, partial, timeout, empty, total-failure, invalid-downstream, and invalid-VIN behavior. Direct SQL verified persisted outcomes and 64-character HMAC fingerprints; Prometheus output verified request and source metrics.
 
-### July 14, 2026 - Submission review and presentation preparation
+### July 14, 2026 - Final review and repository preparation
 
-**Direction given to AI:** Proceed with Day 3 submission-quality work, including reviewer-oriented code cleanup, clean-start verification, repository preparation, and the video walkthrough.
+**Direction given to AI:** Proceed with submission-quality work, including reviewer-oriented code cleanup, clean-start verification, and repository preparation.
 
 **AI contribution:**
 
@@ -105,9 +89,8 @@ This document records how AI is directed, challenged, verified, and corrected th
 - Replaced stringly typed audit outcomes and warning conversion with explicit enums and mappings.
 - Added downstream latency metrics, request duration logging, explicit correlation on unexpected-error logs, and a test proving required audit failure aborts the request.
 - Reconciled the design document with the implementation, clearly separating implemented correlation from future distributed tracing.
-- Prepared a timed 7-8 minute walkthrough and a final submission/email checklist.
 
-**Verification:** The complete multi-module check, fresh-clone workflow, live demonstrations, repository hygiene scan, and public-link checks are recorded in the ledger and handoff once executed.
+**Verification:** The complete multi-module check, fresh-clone workflow, live demonstrations, repository hygiene scan, and public-link checks are recorded in the ledger below.
 
 **Naming refinement:** The owner questioned the ambiguous repeated word in the Service mock module. AI recommended symmetric system-oriented names, and the owner accepted `mock-sales-system` and `mock-service-system`. All Gradle, Spring application, README, and contributor-command references were updated together.
 
@@ -166,14 +149,3 @@ AI initially called `CrudRepository.save` with a preassigned UUID. Spring Data J
 4. **Verification approach:** official documentation for unstable version facts, compiler and formatter checks, unit and mock-HTTP tests, Testcontainers PostgreSQL, container logs, direct SQL, live cURL requests, Prometheus output, and explicit JUnit test-count inspection.
 5. **Most valuable defect found:** the real database integration test showed that a seemingly successful repository call did not insert its audit row, demonstrating why mocked repository tests alone were insufficient.
 6. **Production evolution:** add identity and tenancy controls, secrets management, OpenTelemetry, measured resilience policies, response limits, and a durable audit pipeline where availability requirements justify it.
-
-## Final narrative prompts
-
-Before submission, this document must answer:
-
-1. What work was delegated to AI?
-2. What important decisions remained human-owned?
-3. Which AI suggestions were rejected or changed, and why?
-4. How was generated code verified?
-5. Which defect or design weakness did verification uncover?
-6. What would be done differently in a production implementation?

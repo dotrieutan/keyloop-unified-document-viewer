@@ -8,10 +8,8 @@ The Scenario D backend is functionally complete. It concurrently aggregates both
 
 See:
 
-- [Three-day delivery plan](docs/PLAN.md)
 - [Requirements and traceability](docs/REQUIREMENTS.md)
 - [System design](docs/SYSTEM_DESIGN.md)
-- [Current handoff](docs/HANDOFF.md)
 - [Architecture decisions](docs/DECISIONS.md)
 - [AI collaboration narrative](docs/AI_COLLABORATION.md)
 
@@ -33,7 +31,6 @@ A dealership user needs one search interface for all documents related to a vehi
 
 ```text
 .
-|-- AGENTS.md
 |-- README.md
 |-- aggregator-service
 |-- mock-sales-system

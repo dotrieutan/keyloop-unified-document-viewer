@@ -115,7 +115,7 @@ Do not build a custom frontend. Provide Swagger UI backed by the OpenAPI contrac
 
 ### Consequences
 
-The video can demonstrate VIN input and aggregated results interactively through Swagger UI. UI product behavior remains represented in the design and response contract, while implementation time stays focused on backend correctness, resilience, tests, and observability.
+Swagger UI demonstrates VIN input and aggregated results interactively. UI product behavior remains represented in the design and response contract, while implementation effort stays focused on backend correctness, resilience, tests, and observability.
 
 ## ADR-007: Public API and partial-failure semantics
 

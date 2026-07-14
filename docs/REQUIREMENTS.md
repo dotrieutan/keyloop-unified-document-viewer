@@ -11,8 +11,7 @@ Scenario D describes an end-to-end product with a search interface and aggregate
 This submission implements the backend. The client-side layer will therefore be represented by:
 
 - generated OpenAPI documentation and Swagger UI,
-- reproducible cURL examples, and
-- optionally a scripted demonstration harness if it materially improves the video.
+- reproducible cURL examples.
 
 A custom production frontend is not required and is out of scope.
 
@@ -26,46 +25,17 @@ A custom production frontend is not required and is out of scope.
 
 ## Common backend implementation requirements
 
-| Requirement | Planned evidence |
+| Requirement | Evidence |
 |---|---|
 | Expose a RESTful API. | Versioned document-search endpoint and generated OpenAPI contract. |
 | Use a persistent database. | PostgreSQL-backed search audit records, with schema migrations. |
-| Mock or stub the client-side layer. | Swagger UI, cURL examples, and optional script harness. |
+| Mock or stub the client-side layer. | Swagger UI and reproducible cURL examples. |
 | Fulfil the chosen scenario for the backend layer. | Parallel downstream calls, normalized aggregation, source attribution, and defined failure semantics. |
 | Consider scalability, performance, reliability, maintainability, and observability. | System-design sections, implementation boundaries, structured telemetry, resilience tests, and documented future work. |
 
-## System design deliverables
-
-- [x] Architecture diagram drafted.
-- [x] Component responsibilities drafted.
-- [x] Data flow drafted.
-- [x] Technology selection and justification recorded.
-- [x] Observability strategy drafted.
-- [x] GenAI design-phase usage documented.
-- [x] Review and finalize all sections against the implementation.
-
-## Repository deliverables
-
-- [x] Git repository initialized.
-- [x] README structure created.
-- [x] Dedicated AI collaboration narrative created.
-- [x] Working backend implementation.
-- [x] Clear clean-checkout build, run, and test instructions.
-- [x] Automated tests for core business logic and dependency failures.
-- [x] Final OpenAPI contract and cURL examples.
-
-## Video deliverables
-
-- [ ] Brief personal introduction and selected scenario.
-- [ ] System design and implementation highlights.
-- [ ] One-to-two-minute AI collaboration story.
-- [ ] Live success demonstration.
-- [ ] Live partial-failure or timeout demonstration.
-- [ ] Lessons learned and challenges.
-
 ## Definition of acceptance for this backend
 
-The submission will be considered functionally complete when it demonstrates:
+The submission is functionally complete because it demonstrates:
 
 1. A valid VIN search returning normalized documents from both systems.
 2. Proof that the downstream calls execute concurrently rather than sequentially.

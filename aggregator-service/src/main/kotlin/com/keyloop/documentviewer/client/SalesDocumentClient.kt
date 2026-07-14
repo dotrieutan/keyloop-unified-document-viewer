@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 import java.time.Instant
 import java.util.UUID
@@ -32,7 +33,7 @@ class SalesDocumentClient(
                         .uri("/api/sales/vehicles/{vin}/documents", vin.value)
                         .header("X-Correlation-ID", correlationId.toString())
                         .retrieve()
-                        .body(SalesDocumentResponse::class.java),
+                        .body<SalesDocumentResponse>(),
                 ) { "Sales response body is missing" }
             require(response.vehicleVin == vin.value) { "Sales response VIN does not match the request" }
             val documents = response.records.map { it.toDocument() }
